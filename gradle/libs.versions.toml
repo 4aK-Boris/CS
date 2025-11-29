@@ -1,0 +1,116 @@
+[versions]
+androidx-lifecycle = "2.9.1"
+composeHotReload = "1.0.0-alpha11"
+composeMultiplatform = "1.9.0"
+kotlin = "2.2.20"
+coroutines = "1.10.2"
+ktor = "3.3.0"
+logback = "1.5.18"
+mockk = "1.13.13"
+ksp = "2.2.20-2.0.3"
+viewmodel = "2.8.4"
+navigation = "2.8.0-alpha12"
+koin = "4.1.1"
+koin-annotation = "2.1.0"
+serialization = "1.9.0"
+datastore = "1.2.0"
+exposed = "1.0.0-rc-2"
+slf4j = "2.0.17"
+postgresql = "1.1.0.RELEASE"
+r2dbc-pool = "1.0.2.RELEASE"
+date-time = "0.7.1"
+ozon-auth = "1.0.1"
+okhttp3 = "4.12.0"
+selenium = "4.36.0"
+webdriver-manager = "6.3.2"
+jna = "5.18.1"
+java-steam = "1.7.0"
+protobuf = "4.33.0"
+jsoup = "1.21.2"
+caffeine = "3.2.3"
+
+[libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+
+viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel" }
+navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "coroutines" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+kotlin-date-time = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "date-time" }
+kotlin-refrect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+
+ozon-auth = { group = "dmitriy.losev.ozon", name = "ozon-auth", version.ref = "ozon-auth" }
+
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-test-junit5 = { group = "io.insert-koin", name = "koin-test-junit5", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koin" }
+koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin" }
+koin-logger = { group = "io.insert-koin", name = "koin-logger-slf4j", version.ref = "koin" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotation" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotation" }
+
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-encoding = { group = "io.ktor", name = "ktor-client-encoding", version.ref = "ktor" }
+ktor-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
+ktor-server-yaml = { group = "io.ktor", name = "ktor-server-config-yaml", version.ref = "ktor" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
+
+okhttp3-mockserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp3" }
+
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+
+mockk-core = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+datastore-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastore" }
+
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
+exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
+exposed-json = { group = "org.jetbrains.exposed", name = "exposed-json", version.ref = "exposed" }
+exposed-r2dbc = { group = "org.jetbrains.exposed", name = "exposed-r2dbc", version.ref = "exposed" }
+
+r2dbc-postgresql = { group = "org.postgresql", name = "r2dbc-postgresql", version.ref = "postgresql" }
+r2dbc-pool = { group = "io.r2dbc", name = "r2dbc-pool", version.ref = "r2dbc-pool" }
+
+slf4j = { group = "org.slf4j", name = "slf4j-nop", version.ref = "slf4j" }
+
+java-steam = { group = "in.dragonbra", name = "javasteam", version.ref = "java-steam" }
+java-protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
+kotlin-protobuf = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobuf" }
+
+selenium-java = { group = "org.seleniumhq.selenium", name = "selenium-java", version.ref = "selenium" }
+selenium-devtool = { group = "org.seleniumhq.selenium", name = "selenium-devtools-v140", version.ref = "selenium" }
+webdriver-manager = { group = "io.github.bonigarcia", name = "webdrivermanager", version.ref = "webdriver-manager" }
+
+jna-core = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
+jna-platform = { group = "net.java.dev.jna", name = "jna-platform", version.ref = "jna" }
+
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+
+[plugins]
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

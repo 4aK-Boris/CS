@@ -1,0 +1,1 @@
+SELECT * FROM pulse.market_items
