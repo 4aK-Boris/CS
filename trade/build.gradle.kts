@@ -15,10 +15,10 @@ dependencies {
     implementation(libs.ktor.server.yaml)
     implementation(libs.ktor.server.content.negotiation)
 
-    api(projects.di)
-
-    api(projects.features.pulse.presentation)
-    api(projects.features.steam.presentation)
+//    api(projects.di)
+//
+//    api(projects.features.pulse.presentation)
+//    api(projects.features.steam.presentation)
 
     testImplementation(libs.ktor.server.test.host)
 }

@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: ./gradlew buildFatJar
+        run: ./gradlew :trade:buildFatJar
 
       - name: Copy JAR to server
         uses: appleboy/scp-action@v0.1.7
@@ -26,9 +26,9 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/*-all.jar"
+          source: "trade/build/libs/*-all.jar"
           target: "/opt/trade/backend/"
-          strip_components: 2
+          strip_components: 3
 
       - name: Restart service
         uses: appleboy/ssh-action@v1.0.3
