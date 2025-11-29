@@ -37,5 +37,3 @@ If the server starts successfully, you'll see the following output:
 2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
 ```
 
-wjlyBC2D9XN4wybpT62utV6eEkt2118 - market cs 
-
