@@ -18,7 +18,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: ./gradlew :trade:buildFatJar
+        run:  |
+          chmod +x ./gradlew
+          ./gradlew :trade:buildFatJar
 
       - name: Copy JAR to server
         uses: appleboy/scp-action@v0.1.7
