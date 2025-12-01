@@ -3,12 +3,12 @@ package dmitriy.losev.cs.core.delegates
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import dmitriy.losev.cs.core.StorageInstance
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.koin.core.annotation.Factory
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 @Factory
 @PublishedApi

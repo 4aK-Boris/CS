@@ -1,5 +1,7 @@
 package dmitriy.losev.cs.steam.input
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import dmitriy.losev.cs.steam.input.data.JsonCSData
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -13,8 +15,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import kotlin.random.Random
 
 class Server {

@@ -5,8 +5,8 @@ import Cstrike15Gcmessages.CMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockRespo
 import dmitriy.losev.ozon.core.ECsgoGCMsg.k_EMsgGCCStrike15_v2_Client2GCEconPreviewDataBlockRequest
 import dmitriy.losev.ozon.dso.InspectParamsDSO
 import dmitriy.losev.ozon.dso.ItemInfoDSO
-import `in`.dragonbra.javasteam.base.ClientMsgProtobuf
 import `in`.dragonbra.javasteam.base.ClientGCMsgProtobuf
+import `in`.dragonbra.javasteam.base.ClientMsgProtobuf
 import `in`.dragonbra.javasteam.base.IPacketGCMsg
 import `in`.dragonbra.javasteam.enums.EMsg
 import `in`.dragonbra.javasteam.enums.EResult

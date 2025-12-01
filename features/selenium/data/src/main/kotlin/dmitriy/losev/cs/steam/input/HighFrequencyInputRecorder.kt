@@ -5,12 +5,6 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.request.receive
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.post
-import io.ktor.server.routing.routing
 import java.io.BufferedWriter
 import java.io.File
 import java.time.LocalDateTime
@@ -28,7 +22,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.system.exitProcess
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

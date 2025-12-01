@@ -3,11 +3,10 @@ package dmitriy.losev.cs.steam.input
 import java.awt.MouseInfo
 import java.awt.Robot
 import java.awt.event.InputEvent
-import java.awt.event.KeyEvent.VK_1
 import java.io.File
-import kotlinx.coroutines.*
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.delay
 
 /**
  * Класс для воспроизведения записанных InputTick

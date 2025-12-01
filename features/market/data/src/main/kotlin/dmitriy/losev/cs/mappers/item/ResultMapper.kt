@@ -1,7 +1,6 @@
 package dmitriy.losev.cs.mappers.item
 
 import dmitriy.losev.cs.dso.item.ResultDSO
-import dmitriy.losev.cs.dto.item.ResultDTO
 import org.koin.core.annotation.Factory
 
 @Factory

@@ -4,7 +4,6 @@ import dmitriy.losev.cs.dto.ListingInfoDTO
 import dmitriy.losev.cs.dto.offer.RequestSaleOffersDTO
 import dmitriy.losev.cs.dto.offer.ResponseSaleOffersDTO
 import org.koin.core.annotation.Factory
-import kotlin.mapCatching
 
 @Factory
 class GetSaleOffersForItemUseCase(private val getSaleOffersUseCase: GetSaleOffersUseCase): BaseUseCase {

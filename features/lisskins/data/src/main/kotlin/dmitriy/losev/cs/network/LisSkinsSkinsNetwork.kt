@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.network
 
-import dmitriy.losev.cs.dso.skins.BuySkinForUserRequestDSO
 import dmitriy.losev.cs.dso.skins.BuyOrWithdrawSkinForUserResponseDSO
+import dmitriy.losev.cs.dso.skins.BuySkinForUserRequestDSO
 import dmitriy.losev.cs.dso.skins.SearchSkinsRequestDSO
 import dmitriy.losev.cs.dso.skins.SearchSkinsResponseDSO
 import dmitriy.losev.cs.dso.skins.SkinsAvailabilityResponseDSO

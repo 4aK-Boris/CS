@@ -4,7 +4,6 @@ import dmitriy.losev.cs.clients.PulseNetworkClient
 import dmitriy.losev.cs.dso.auth.AuthRequestDSO
 import dmitriy.losev.cs.dso.auth.AuthResponseDSO
 import dmitriy.losev.cs.dso.offers.request.OffersRequestDSO
-import dmitriy.losev.cs.dso.offers.response.OfferItemDSO
 import dmitriy.losev.cs.dso.offers.response.OffersResponseDSO
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided

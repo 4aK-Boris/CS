@@ -1,14 +1,10 @@
 package dmitriy.losev.cs.steam.login
 
-import com.sun.jna.platform.win32.WinDef
-import com.sun.jna.platform.win32.WinDef.WPARAM
-import com.sun.jna.platform.win32.WinDef.LPARAM
 import com.sun.jna.platform.win32.WinDef.HWND
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.awt.event.KeyEvent
-import kotlinx.coroutines.delay
 
 class SteamAutoLogin {
 

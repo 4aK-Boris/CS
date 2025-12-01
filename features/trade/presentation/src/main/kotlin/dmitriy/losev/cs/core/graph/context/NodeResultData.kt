@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.core.graph.context
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface NodeResultData {

@@ -1,8 +1,5 @@
 package dmitriy.losev.cs.steam.input
 
-import com.github.kwhat.jnativehook.GlobalScreen
-import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent
-import com.github.kwhat.jnativehook.keyboard.NativeKeyListener
 import dmitriy.losev.cs.steam.ConsoleEncodingFix
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

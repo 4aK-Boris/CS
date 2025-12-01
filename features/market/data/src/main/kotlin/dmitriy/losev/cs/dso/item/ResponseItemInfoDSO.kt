@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.dso.item
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class ResponseItemInfoDSO(

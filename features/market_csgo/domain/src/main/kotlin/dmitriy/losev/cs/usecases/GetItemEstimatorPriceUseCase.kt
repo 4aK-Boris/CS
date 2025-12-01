@@ -1,10 +1,7 @@
 package dmitriy.losev.cs.usecases
 
 import dmitriy.losev.cs.core.PriceEstimator
-import dmitriy.losev.cs.dto.sales.ItemHistorySalesDTO
-import dmitriy.losev.cs.repositories.MarketCSGOSalesRepository
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Provided
 
 @Factory
 class GetItemEstimatorPriceUseCase(

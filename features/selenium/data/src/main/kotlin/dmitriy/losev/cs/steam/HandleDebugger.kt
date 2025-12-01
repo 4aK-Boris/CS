@@ -3,11 +3,12 @@ package dmitriy.losev.cs.steam
 // HandleDebugger.kt
 import com.sun.jna.Memory
 import com.sun.jna.Pointer
-import com.sun.jna.platform.win32.*
+import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.ptr.IntByReference
-import mu.KotlinLogging
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 

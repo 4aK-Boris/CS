@@ -2,7 +2,6 @@ package dmitriy.losev.cs.core
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.openqa.selenium.By
 
 private val selenium = Selenium()
 private val outlook = SeleniumOutlook(selenium)

@@ -1,10 +1,7 @@
 package dmitriy.losev.cs.core
 
 import java.io.File
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 private val steamCode = SteamCode()

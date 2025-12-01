@@ -1,7 +1,11 @@
 package dmitriy.losev.cs.steam
 
 import com.sun.jna.Native
-import com.sun.jna.platform.win32.*
+import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.Tlhelp32
+import com.sun.jna.platform.win32.WinBase
+import com.sun.jna.platform.win32.WinDef
+import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.ptr.IntByReference
 import mu.KotlinLogging
 

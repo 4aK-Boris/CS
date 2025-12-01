@@ -1,6 +1,5 @@
 package dmitriy.losev.cs.usecases.pulse
 
-import dmitriy.losev.cs.exceptions.DataStoreException
 import dmitriy.losev.cs.repositories.DataStorePulseRepository
 import dmitriy.losev.cs.usecases.BaseUseCase
 import java.time.LocalDateTime

@@ -7,9 +7,9 @@ import io.ktor.http.CookieEncoding
 import io.ktor.http.Url
 import io.ktor.util.date.GMTDate
 import io.ktor.util.date.getTimeMillis
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.concurrent.ConcurrentHashMap
 
 internal class PersistentCookiesStorage(
     cookieStorageHandlerFactory: CookieStorageHandlerFactory,

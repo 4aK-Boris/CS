@@ -1,8 +1,6 @@
 package dmitriy.losev.cs.steam
 
 import mu.KotlinLogging
-import java.nio.file.Path
-import kotlin.concurrent.thread
 
 private val launcherLogger = KotlinLogging.logger("SteamSequentialLauncher")
 

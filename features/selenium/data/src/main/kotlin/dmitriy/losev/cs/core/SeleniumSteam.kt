@@ -8,7 +8,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable
 import org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated
 import org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated
 import org.openqa.selenium.support.ui.Select
-import org.openqa.selenium.support.ui.WebDriverWait
 import kotlin.random.Random
 
 class SeleniumSteam(private val selenium: Selenium) {

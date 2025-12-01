@@ -1,14 +1,10 @@
 package dmitriy.losev.cs.steam
 
-import com.sun.jna.Native
-import com.sun.jna.platform.win32.Advapi32
-import com.sun.jna.platform.win32.Winsvc
-import com.sun.jna.platform.win32.WinNT
-import com.sun.jna.ptr.IntByReference
-import mu.KotlinLogging
-
 // WindowsServiceManager.kt
-import com.sun.jna.platform.win32.*
+import com.sun.jna.platform.win32.Advapi32
+import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.WinNT
+import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 

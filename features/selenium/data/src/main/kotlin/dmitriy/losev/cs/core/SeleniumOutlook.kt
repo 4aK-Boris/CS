@@ -10,7 +10,6 @@ import org.openqa.selenium.StaleElementReferenceException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.WindowType
-import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.attributeToBe
 import org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable
 import org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated

@@ -6,7 +6,6 @@ import dmitriy.losev.cs.dto.offer.ResponseSaleOffersDTO
 import dmitriy.losev.cs.usecases.BaseUseCase
 import dmitriy.losev.cs.usecases.GetSaleOffersUseCase
 import org.koin.core.annotation.Factory
-import kotlin.mapCatching
 
 @Factory
 class GetCharmSaleOffersUseCase(private val getSaleOffersUseCase: GetSaleOffersUseCase): BaseUseCase {
