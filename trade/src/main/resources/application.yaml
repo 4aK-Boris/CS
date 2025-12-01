@@ -13,7 +13,7 @@ ktor:
   csfloat:
     url: "http://csfloat:80"
   app:
-    environment: "dev"
+    environment: "prod"
     debug: true
   logging:
     http:
