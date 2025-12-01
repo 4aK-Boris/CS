@@ -1,6 +1,5 @@
 package dmitriy.losev.cs.clients
 
-import io.ktor.client.call.body
 import io.ktor.util.reflect.typeInfo
 import kotlin.reflect.KClass
 

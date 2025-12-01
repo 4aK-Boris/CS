@@ -1,6 +1,5 @@
 package dmitriy.losev.cs.mappers
 
-import dmitriy.losev.cs.Credentials
 import dmitriy.losev.cs.dto.CredentialsDTO
 import org.koin.core.annotation.Factory
 

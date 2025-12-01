@@ -1,8 +1,10 @@
 plugins {
     id("koin.config")
+    id("ktor.config")
+    id("detekt.config")
     id("test.config")
     id("serialization.config")
-    id("io.ktor.plugin") version "3.3.0"
+    alias(libs.plugins.ktor)
 }
 
 group = "dmitriy.losev.cs"
@@ -10,15 +12,23 @@ version = "0.0.1"
 
 dependencies {
 
-    implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.yaml)
     implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.double.receive)
+    implementation(libs.ktor.serialization.json)
 
-//    api(projects.di)
+    implementation(libs.logback.classic)
+
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger)
+
+    api(projects.di)
 //
 //    api(projects.features.pulse.presentation)
-//    api(projects.features.steam.presentation)
+    api(projects.features.steam.presentation)
 
     testImplementation(libs.ktor.server.test.host)
 }

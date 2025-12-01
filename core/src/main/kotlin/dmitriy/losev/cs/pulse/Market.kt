@@ -16,7 +16,9 @@ enum class Market(
     companion object {
 
         fun findMarketByTitle(title: String): Market {
-            return entries.firstOrNull { it.title == title } ?: throw IllegalArgumentException("Неизвестный маркет с названием: $title. Доступные маркеты: ${entries.joinToString { it.title }}")
+            return entries.firstOrNull { market -> market.title == title } ?: throw IllegalArgumentException(
+                "Неизвестный маркет с названием: $title. Доступные маркеты: ${entries.joinToString(transform = Market::title)}"
+            )
         }
     }
 }

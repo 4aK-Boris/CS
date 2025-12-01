@@ -1,8 +1,8 @@
 package dmitriy.losev.cs.repositories
 
+import dmitriy.losev.cs.dto.ListingInfoDTO
 import dmitriy.losev.cs.dto.item.ItemInfoDTO
 import dmitriy.losev.cs.dto.item.ItemLinkDTO
-import dmitriy.losev.cs.dto.ListingInfoDTO
 import dmitriy.losev.cs.handlers.ItemHandler
 import dmitriy.losev.cs.mappers.item.ItemInfoMapper
 import dmitriy.losev.cs.mappers.item.ItemLinkMapper

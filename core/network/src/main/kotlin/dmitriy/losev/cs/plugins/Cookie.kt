@@ -1,7 +1,6 @@
 package dmitriy.losev.cs.plugins
 
 import com.github.benmanes.caffeine.cache.Cache
-import dmitriy.losev.cs.cookie.CookieStorageHandler
 import dmitriy.losev.cs.cookie.CookieStorageHandlerFactory
 import dmitriy.losev.cs.cookie.PersistentCookiesStorage
 import io.ktor.client.HttpClientConfig

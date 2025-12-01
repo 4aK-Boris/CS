@@ -2,12 +2,12 @@
 androidx-lifecycle = "2.9.1"
 composeHotReload = "1.0.0-alpha11"
 composeMultiplatform = "1.9.0"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 coroutines = "1.10.2"
 logback = "1.5.21"
 ktor = "3.3.3"
 mockk = "1.13.13"
-ksp = "2.2.20-2.0.3"
+ksp = "2.3.3"
 viewmodel = "2.8.4"
 navigation = "2.8.0-alpha12"
 koin = "4.1.1"
@@ -28,6 +28,10 @@ java-steam = "1.7.0"
 protobuf = "4.33.0"
 jsoup = "1.21.2"
 caffeine = "3.2.3"
+jobrunr = "8.3.0"
+konform = "0.11.0"
+smiley4 = "5.4.0"
+kenerator = "2.5.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -41,8 +45,21 @@ ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty-jvm", version
 ktor-server-content-negotiation = { group = "io.ktor", name = "ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-yaml = { group = "io.ktor", name = "ktor-server-config-yaml", version.ref = "ktor" }
 ktor-server-test-host = { group = "io.ktor", name = "ktor-server-test-host-jvm", version.ref = "ktor" }
+ktor-server-status-pages = { group = "io.ktor", name = "ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-call-logging = { group = "io.ktor", name = "ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-double-receive = { group = "io.ktor", name = "ktor-server-double-receive", version.ref = "ktor" }
 
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+
+jobrunr = { group = "org.jobrunr", name = "jobrunr", version.ref = "jobrunr" }
+
+konform = { group = "io.konform", name = "konform", version.ref = "konform" }
+
+smiley4-openapi = { group = "io.github.smiley4", name = "ktor-openapi", version.ref = "smiley4" }
+smiley4-swagger = { group = "io.github.smiley4", name = "ktor-swagger-ui", version.ref = "smiley4" }
+smiley4-schema-kenerator-core = { group = "io.github.smiley4", name = "schema-kenerator-core", version.ref = "kenerator" }
+smiley4-schema-kenerator-serialization = { group = "io.github.smiley4", name = "schema-kenerator-serialization", version.ref = "kenerator" }
+smiley4-schema-kenerator-swagger = { group = "io.github.smiley4", name = "schema-kenerator-swagger", version.ref = "kenerator" }
 
 viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "viewmodel" }
 navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
@@ -66,11 +83,12 @@ koin-logger = { group = "io.insert-koin", name = "koin-logger-slf4j", version.re
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotation" }
 koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotation" }
 
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-client-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-encoding = { group = "io.ktor", name = "ktor-client-encoding", version.ref = "ktor" }
 ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }

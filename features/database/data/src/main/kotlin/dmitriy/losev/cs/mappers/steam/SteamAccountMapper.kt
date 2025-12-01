@@ -1,60 +1,36 @@
 package dmitriy.losev.cs.mappers.steam
 
-import dmitriy.losev.cs.dso.steam.Session
+import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.dso.steam.SteamAccountDSO
 import dmitriy.losev.cs.dto.steam.SteamAccountDTO
-import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Provided
 
 @Factory
-class SteamAccountMapper(@Provided private val json: Json) {
+internal class SteamAccountMapper(private val aesCrypto: AesCrypto) {
 
     fun map(value: SteamAccountDTO): SteamAccountDSO {
         return SteamAccountDSO(
-            accountName = value.accountName,
-            sharedSecret = value.sharedSecret,
-            serialNumber = value.serialNumber,
-            revocationCode = value.revocationCode,
-            uri = value.uri,
-            serverTime = value.serverTime,
-            tokenGid = value.tokenGid,
-            identitySecret = value.identitySecret,
-            secret = value.secret,
-            status = value.status,
+            steamId = value.steamId,
+            login = value.login,
+            password = aesCrypto.encrypt(data = value.password),
+            sharedSecret = aesCrypto.encrypt(data = value.sharedSecret),
+            identitySecret = aesCrypto.encrypt(data = value.identitySecret),
+            revocationCode = aesCrypto.encrypt(data = value.revocationCode),
             deviceId = value.deviceId,
-            fullyEnrolled = value.fullyEnrolled,
-            session = Session(
-                steamId = value.steamId,
-                accessToken = value.accessToken,
-                refreshToken = value.refreshToken,
-                sessionId = value.sessionId
-            )
+            createdAt = value.createdAt
         )
     }
 
     fun map(value: SteamAccountDSO): SteamAccountDTO {
         return SteamAccountDTO(
-            accountName = value.accountName,
-            sharedSecret = value.sharedSecret,
-            serialNumber = value.serialNumber,
-            revocationCode = value.revocationCode,
-            uri = value.uri,
-            serverTime = value.serverTime,
-            tokenGid = value.tokenGid,
-            identitySecret = value.identitySecret,
-            secret = value.secret,
-            status = value.status,
+            steamId = value.steamId,
+            login = value.login,
+            password = aesCrypto.decrypt(encryptedData = value.password),
+            sharedSecret = aesCrypto.decrypt(encryptedData = value.sharedSecret),
+            identitySecret = aesCrypto.decrypt(encryptedData = value.identitySecret),
+            revocationCode = aesCrypto.decrypt(encryptedData = value.revocationCode),
             deviceId = value.deviceId,
-            fullyEnrolled = value.fullyEnrolled,
-            steamId = value.session.steamId,
-            accessToken = value.session.accessToken,
-            refreshToken = value.session.refreshToken,
-            sessionId = value.session.sessionId
+            createdAt = value.createdAt
         )
-    }
-
-    fun map(value: String): SteamAccountDSO {
-        return json.decodeFromString(string = value)
     }
 }

@@ -1,5 +1,6 @@
 plugins {
     id("koin.config")
+    id("detekt.config")
     id("di.test.config")
 }
 

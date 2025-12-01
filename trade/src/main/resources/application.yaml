@@ -4,3 +4,35 @@ ktor:
       - dmitriy.losev.cs.ApplicationKt.module
   deployment:
     port: 8080
+  database:
+    url: ${DB_URL}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+  crypto:
+    aesKey: ${AES_KEY}
+  csfloat:
+    url: "http://csfloat:80"
+  app:
+    environment: "dev"
+    debug: true
+  logging:
+    http:
+      enabled: true
+      level: DEBUG
+      excludedPaths:
+        - /health
+        - /metrics
+        - /favicon.ico
+      sensitiveFields:
+        - password
+        - secret
+        - token
+        - apiKey
+        - api_key
+        - identity_secret
+        - shared_secret
+      sensitiveHeaders:
+        - authorization
+        - cookie
+        - x-api-key
+      maxBodySize: 10000  # обрезать body если больше N символов

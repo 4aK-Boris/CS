@@ -12,6 +12,7 @@ import dmitriy.losev.cs.plugins.configureProxy
 import dmitriy.losev.cs.plugins.configureRequestRetry
 import dmitriy.losev.cs.plugins.configureResponseValidation
 import dmitriy.losev.cs.plugins.configureTimeout
+import dmitriy.losev.cs.proxy.ProxyConfig
 import dmitriy.losev.cs.proxy.SteamAccountsProxy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp

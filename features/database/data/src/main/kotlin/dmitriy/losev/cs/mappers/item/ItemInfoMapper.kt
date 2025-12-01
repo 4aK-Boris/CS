@@ -5,7 +5,7 @@ import dmitriy.losev.cs.dto.item.ItemInfoDTO
 import org.koin.core.annotation.Factory
 
 @Factory
-class ItemInfoMapper {
+internal class ItemInfoMapper {
 
     fun map(value: ItemInfoDSO): ItemInfoDTO {
         return ItemInfoDTO(

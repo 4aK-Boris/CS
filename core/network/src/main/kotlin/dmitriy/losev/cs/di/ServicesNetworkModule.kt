@@ -5,29 +5,12 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import dmitriy.losev.cs.Context
 import dmitriy.losev.cs.clients.HttpClientHandler
 import dmitriy.losev.cs.cookie.CookieStorageHandlerFactory
-import dmitriy.losev.cs.plugins.configureCookie
-import dmitriy.losev.cs.plugins.configureEncoding
-import dmitriy.losev.cs.plugins.configureJson
-import dmitriy.losev.cs.plugins.configureLogging
-import dmitriy.losev.cs.plugins.configureRequestRetry
-import dmitriy.losev.cs.plugins.configureResponseValidation
-import dmitriy.losev.cs.plugins.configureTimeout
-import dmitriy.losev.cs.proxy.ProxyClients
+import dmitriy.losev.cs.handlers.ProxyHandler
 import dmitriy.losev.cs.proxy.SteamAccountsProxy
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.engine.ProxyBuilder
-import io.ktor.client.engine.http
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.http.Cookie
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import okhttp3.ConnectionPool
-import okhttp3.ConnectionSpec
-import okhttp3.Dispatcher
-import okhttp3.Protocol
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
@@ -49,8 +32,10 @@ class ServicesNetworkModule {
     }
 
     @Singleton
-    internal fun getSteamAccountsProxy(): SteamAccountsProxy {
-        return SteamAccountsProxy()
+    internal fun getSteamAccountsProxy(@Provided proxyHandler: ProxyHandler): SteamAccountsProxy = runBlocking {
+        SteamAccountsProxy(proxyHandler).apply {
+            initSteamAccountProxies()
+        }
     }
 
     @Singleton
@@ -63,8 +48,13 @@ class ServicesNetworkModule {
         return HttpClientHandler(context, cookieStorageHandlerFactory, steamAccountsProxy, persistentCookieCache)
     }
 
+
     @Singleton
-    internal fun getProxyClients(@Provided context: Context, httpClientHandler: HttpClientHandler): ProxyClients {
-        return ProxyClients(context, httpClientHandler)
+    @Named(value = "PersistentCookieCache")
+    internal fun getPersistentCookieCache(): Cache<ULong, MutableMap<String, Cookie>> {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(30, TimeUnit.DAYS)
+            .maximumSize(10_000)
+            .build()
     }
 }

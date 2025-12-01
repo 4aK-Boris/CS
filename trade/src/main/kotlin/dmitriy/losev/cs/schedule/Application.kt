@@ -4,8 +4,6 @@ import org.koin.core.component.KoinComponent
 
 object Application: KoinComponent {
 
-//    private const val GET_LIS_SKINS_TO_CS_MARKET_ITEMS_TASK_ID = "get_lis_skins_to_cs_market_items_task_id"
-//    private const val REMOVE_OLD_LIS_SKINS_TO_CS_MARKET_ITEMS_TASK_ID = "remove_old_lis_skins_to_cs_market_items_task_id"
 //
 //    private const val ADD_STEAM_ACCOUNTS_TASK_ID = "add_steam_accounts_task_id"
 //

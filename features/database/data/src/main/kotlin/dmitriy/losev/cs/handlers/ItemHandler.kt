@@ -5,7 +5,7 @@ import dmitriy.losev.cs.dso.item.ItemInfoDSO
 import dmitriy.losev.cs.dso.item.ItemLinkDSO
 import dmitriy.losev.cs.dso.item.ItemSaleOfferDSO
 
-interface ItemHandler {
+internal interface ItemHandler {
 
     suspend fun insertItemInfo(itemInfo: ItemInfoDSO): String?
 

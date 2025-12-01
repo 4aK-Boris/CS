@@ -5,19 +5,14 @@ import dmitriy.losev.cs.cookie.NetworkCookie
 import dmitriy.losev.cs.tables.CookiesTable
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.batchInsert
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
-import org.koin.core.annotation.Provided
 
-internal class CookieHandlerImpl(
-    @Provided private val json: Json,
-    private val database: Database
-) : CookieHandler {
+internal class CookieHandlerImpl(private val json: Json, private val database: Database) : CookieHandler {
 
     override suspend fun saveCookies(steamId: ULong, cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
 

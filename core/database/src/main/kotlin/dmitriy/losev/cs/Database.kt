@@ -15,15 +15,15 @@ import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 class Database(private val context: Context) {
 
-    private lateinit var database: R2dbcDatabase
+    private lateinit var databaseInstanse: R2dbcDatabase
 
     private lateinit var connectionPool: ConnectionPool
 
     private fun getConnectionPool(): ConnectionPool {
 
-        val databaseUrl = context.environment.databaseUrl
-        val databaseUser = context.credentials.databaseUser
-        val databasePassword = context.credentials.databasePassword
+        val databaseUrl = context.databaseConfig.databaseUrl
+        val databaseUser = context.databaseConfig.databaseUser
+        val databasePassword = context.databaseConfig.databasePassword
 
         val url = databaseUrl.removePrefix("r2dbc:pool:postgresql://")
         val parts = url.split(":")
@@ -60,8 +60,8 @@ class Database(private val context: Context) {
             connectionPool = getConnectionPool()
         }
 
-        if (::database.isInitialized.not()) {
-            database = R2dbcDatabase.connect(
+        if (::databaseInstanse.isInitialized.not()) {
+            databaseInstanse = R2dbcDatabase.connect(
                 connectionFactory = connectionPool,
                 databaseConfig = R2dbcDatabaseConfig {
                     useNestedTransactions = false
@@ -80,7 +80,7 @@ class Database(private val context: Context) {
 
     suspend fun <T> suspendTransaction(f: suspend R2dbcTransaction.() -> T): T = withContext(context = context.coroutineContext) {
         connectToDatabase()
-        suspendTransaction(db = database) {
+        suspendTransaction(db = databaseInstanse) {
             addLogger(StdOutSqlLogger)
             f()
         }

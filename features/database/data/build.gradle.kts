@@ -1,6 +1,7 @@
 plugins {
     id("koin.config")
     id("test.config")
+    id("detekt.config")
     id("serialization.config")
 }
 
@@ -15,5 +16,6 @@ dependencies {
     implementation(libs.r2dbc.postgresql)
 
     api(projects.core.database)
+    api(projects.core.crypto)
     api(projects.features.database.domain)
 }

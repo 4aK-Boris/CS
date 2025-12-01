@@ -1,27 +1,53 @@
 package dmitriy.losev.cs.proxy
 
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import dmitriy.losev.cs.handlers.ProxyHandler
+import java.util.concurrent.TimeUnit
 import org.koin.core.annotation.Provided
 
 class SteamAccountsProxy(@Provided private val proxyHandler: ProxyHandler) {
 
-    private val steamAccountsProxyConfigsMap = mutableMapOf<ULong, ProxyConfig>()
+    private val proxyCache: Cache<ULong, ProxyConfig> = Caffeine.newBuilder()
+        .expireAfterWrite(5, TimeUnit.MINUTES)
+        .maximumSize(10_000)
+        .build()
+
+    @Volatile
+    private var initialized = false
 
     suspend fun initSteamAccountProxies() {
-        setSteamAccountsProxy(steamAccountProxyConfigs = proxyHandler.getSteamAccountProxyConfigs())
+        if (initialized) return
+        reloadAllProxies()
+        initialized = true
+    }
+
+    suspend fun reloadAllProxies() {
+
+        proxyHandler.getSteamAccountProxyConfigs().apply {
+
+            proxyCache.invalidateAll()
+
+            forEach { (steamId, proxyConfig) ->
+                proxyCache.put(steamId, proxyConfig)
+            }
+        }
     }
 
     suspend fun addSteamAccountProxy(steamId: ULong) {
-        setSteamAccountsProxy(steamAccountProxyConfigs = proxyHandler.getSteamAccountProxyConfigs())
+        val config = proxyHandler.addSteamAccountProxyConfig(steamId)
+        proxyCache.put(steamId, config)
     }
 
     fun getSteamAccountProxyConfig(steamId: ULong): ProxyConfig {
-        return requireNotNull(value = steamAccountsProxyConfigsMap[steamId]) { "Proxy for steam account with steamId = $steamId does not exist" }
+        return requireNotNull(proxyCache.getIfPresent(steamId)) { "Proxy for steam account with steamId = $steamId does not exist" }
     }
 
-    private fun setSteamAccountsProxy(steamAccountProxyConfigs: List<SteamAccountsProxyConfig>) {
-        steamAccountProxyConfigs.forEach { (steamId, proxyConfig) ->
-            steamAccountsProxyConfigsMap[steamId] = proxyConfig
-        }
+    fun invalidate(steamId: ULong) {
+        proxyCache.invalidate(steamId)
+    }
+
+    fun invalidateAll() {
+        proxyCache.invalidateAll()
     }
 }

@@ -7,6 +7,10 @@ import kotlinx.coroutines.launch
 
 interface BaseUseCase {
 
+    fun <T: Any> T?.requireNotNull(lazyMessage: () -> Any): T {
+        return requireNotNull(value = this, lazyMessage = lazyMessage)
+    }
+
     suspend fun <T : Any, R : Any> createResult(data: List<T>, results: List<Result<R>>) {
 
     }
@@ -44,22 +48,12 @@ interface BaseUseCase {
         f2: suspend () -> Unit,
         f3: suspend () -> Unit = { },
         f4: suspend () -> Unit = { },
-        f5: suspend () -> Unit = { },
-        f6: suspend () -> Unit = { },
-        f7: suspend () -> Unit = { },
-        f8: suspend () -> Unit = { },
-        f9: suspend () -> Unit = { },
-        f10: suspend () -> Unit = { }
+        f5: suspend () -> Unit = { }
     ): Unit = coroutineScope {
         launch { f1() }
         launch { f2() }
         launch { f3() }
         launch { f4() }
         launch { f5() }
-        launch { f6() }
-        launch { f7() }
-        launch { f8() }
-        launch { f9() }
-        launch { f10() }
     }
 }

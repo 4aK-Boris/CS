@@ -1,11 +1,9 @@
 package dmitriy.losev.cs.clients
 
-import dmitriy.losev.cs.cookie.NetworkCookie
 import dmitriy.losev.cs.proxy.Service
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -13,17 +11,12 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.Cookie
 import io.ktor.http.Parameters
 import io.ktor.http.URLProtocol
 import io.ktor.http.parameters
 import io.ktor.http.path
-import io.ktor.http.setCookie
 import io.ktor.util.appendAll
 import io.ktor.util.reflect.TypeInfo
-import io.ktor.util.reflect.typeInfo
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.reflect.KClass
 
 abstract class BaseNetworkClient {

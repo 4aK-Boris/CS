@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.usecases.item
 
-import dmitriy.losev.cs.dto.item.ItemLinkDTO
 import dmitriy.losev.cs.dto.ListingInfoDTO
+import dmitriy.losev.cs.dto.item.ItemLinkDTO
 import dmitriy.losev.cs.repositories.ItemRepository
 import dmitriy.losev.cs.usecases.BaseUseCase
 import org.koin.core.annotation.Factory

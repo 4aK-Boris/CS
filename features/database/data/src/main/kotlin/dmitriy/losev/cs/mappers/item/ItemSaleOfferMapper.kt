@@ -1,12 +1,12 @@
 package dmitriy.losev.cs.mappers.item
 
 import dmitriy.losev.cs.dso.item.ItemSaleOfferDSO
-import dmitriy.losev.cs.dto.item.ItemSaleOfferDTO
 import dmitriy.losev.cs.dto.ListingInfoDTO
+import dmitriy.losev.cs.dto.item.ItemSaleOfferDTO
 import org.koin.core.annotation.Factory
 
 @Factory
-class ItemSaleOfferMapper {
+internal class ItemSaleOfferMapper {
 
     fun map(value: Triple<ULong, ULong, ListingInfoDTO>): ItemSaleOfferDSO {
         return ItemSaleOfferDSO(

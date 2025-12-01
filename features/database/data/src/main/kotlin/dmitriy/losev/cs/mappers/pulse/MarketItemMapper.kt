@@ -6,7 +6,7 @@ import dmitriy.losev.cs.pulse.Market
 import org.koin.core.annotation.Factory
 
 @Factory
-class MarketItemMapper {
+internal class MarketItemMapper {
 
     fun map(value: MarketItemDSO): MarketItemDTO {
         return MarketItemDTO(

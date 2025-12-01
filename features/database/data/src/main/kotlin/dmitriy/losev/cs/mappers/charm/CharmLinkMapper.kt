@@ -6,7 +6,7 @@ import dmitriy.losev.cs.mappers.LongMapper
 import org.koin.core.annotation.Factory
 
 @Factory
-class CharmLinkMapper(private val longMapper: LongMapper) {
+internal class CharmLinkMapper(private val longMapper: LongMapper) {
 
     fun map(value: CharmLinkDSO): CharmLinkDTO {
         return CharmLinkDTO(

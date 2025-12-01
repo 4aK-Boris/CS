@@ -8,6 +8,7 @@ object ConsoleEncodingFix {
 
     private var isFixed = false
 
+    @Suppress("TooGenericExceptionCaught")
     fun fix() {
         if (isFixed) return
 
@@ -18,8 +19,8 @@ object ConsoleEncodingFix {
             }
             isFixed = true
             println("✓ Кодировка консоли установлена: UTF-8")
-        } catch (e: Exception) {
-            System.err.println("⚠ Не удалось установить UTF-8: ${e.message}")
+        } catch (exception: Exception) {
+            System.err.println("⚠ Не удалось установить UTF-8: ${exception.message}")
         }
     }
 
@@ -35,14 +36,14 @@ object ConsoleEncodingFix {
                 .redirectError(ProcessBuilder.Redirect.DISCARD)
                 .start()
                 .waitFor()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Игнорируем ошибки, попробуем через PowerShell
             try {
                 ProcessBuilder(
                     "powershell", "-Command",
                     "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8"
                 ).start().waitFor()
-            } catch (e2: Exception) {
+            } catch (_: Exception) {
                 // Ничего не делаем
             }
         }
@@ -60,7 +61,7 @@ object ConsoleEncodingFix {
             val charset = Charset::class.java.getDeclaredField("defaultCharset")
             charset.isAccessible = true
             charset.set(null, StandardCharsets.UTF_8)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Игнорируем - работает не на всех версиях Java
         }
     }

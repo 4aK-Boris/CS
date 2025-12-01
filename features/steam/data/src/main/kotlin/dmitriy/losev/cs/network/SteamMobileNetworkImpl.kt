@@ -11,10 +11,10 @@ import dmitriy.losev.cs.dso.RSAKeyDSO
 import dmitriy.losev.cs.dso.TradeOfferAcceptResultDSO
 import dmitriy.losev.cs.dso.TradeOfferInfoDSO
 import java.net.URLEncoder
-import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided
+import org.koin.core.annotation.Singleton
 
-@Factory(binds = [SteamMobileNetwork::class])
+@Singleton(binds = [SteamMobileNetwork::class])
 class SteamMobileNetworkImpl(
     @Provided private val timeHandler: TimeHandler,
     @Provided private val steamMobileProxyClient: SteamMobileProxyClient

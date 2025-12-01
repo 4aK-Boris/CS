@@ -5,7 +5,7 @@ import dmitriy.losev.cs.dto.item.ItemLinkDTO
 import org.koin.core.annotation.Factory
 
 @Factory
-class ItemLinkMapper {
+internal class ItemLinkMapper {
 
     fun map(value: ItemLinkDSO): ItemLinkDTO {
         return ItemLinkDTO(

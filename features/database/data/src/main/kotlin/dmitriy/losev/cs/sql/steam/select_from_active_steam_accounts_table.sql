@@ -1,0 +1,1 @@
+SELECT * FROM steam.active_steam_accounts

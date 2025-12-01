@@ -1,4 +1,4 @@
-package dmitriy.losev.ozon
+package dmitriy.losev.cs
 
 import io.ktor.http.HttpHeaders
 

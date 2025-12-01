@@ -1,6 +1,5 @@
 package dmitriy.losev.cs
 
-import java.time.Instant
 import org.koin.core.annotation.Singleton
 
 @Singleton

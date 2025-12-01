@@ -5,4 +5,4 @@ import org.koin.core.annotation.Module
 
 @Module
 @ComponentScan("dmitriy.losev.cs.clients")
-class NetworkClientModule
+internal class NetworkClientModule

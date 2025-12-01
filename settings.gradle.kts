@@ -4,6 +4,17 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     includeBuild("convention-plugins/panel-build")
+    repositories {
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+    }
+    plugins {
+        kotlin("jvm") version "2.2.21" apply false
+        kotlin("plugin.serialization") version "2.2.21" apply false
+        id("io.gitlab.arturbosch.detekt") version "1.23.8" apply false
+    }
 }
 
 dependencyResolutionManagement {
@@ -11,6 +22,7 @@ dependencyResolutionManagement {
         mavenCentral()
         google()
         gradlePluginPortal()
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/ktor/eap")
     }
 }
 
@@ -76,9 +88,11 @@ include("features:trade")
 include("features:trade:di")
 include("features:trade:domain")
 include("features:trade:presentation")
-include("core:cache")
 include("core:database")
 include("features:market_csgo")
 include("features:market_csgo:di")
 include("features:market_csgo:data")
 include("features:market_csgo:domain")
+include("core:schedule")
+include("core:crypto")
+include("core:ktor")

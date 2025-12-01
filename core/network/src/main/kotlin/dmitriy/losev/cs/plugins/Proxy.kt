@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.plugins
 
+import dmitriy.losev.cs.proxy.ProxyConfig
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import java.net.InetSocketAddress

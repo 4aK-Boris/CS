@@ -3,7 +3,7 @@ package dmitriy.losev.cs.mappers
 import org.koin.core.annotation.Factory
 
 @Factory
-class LongMapper {
+internal class LongMapper {
 
     /**
      * Преобразует ULong в Long путем сдвига диапазона.

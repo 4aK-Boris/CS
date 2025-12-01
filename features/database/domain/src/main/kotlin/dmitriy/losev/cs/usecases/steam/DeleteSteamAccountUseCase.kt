@@ -8,7 +8,7 @@ import org.koin.core.annotation.Provided
 @Factory
 class DeleteSteamAccountUseCase(@Provided private val steamDatabaseAccountRepository: SteamDatabaseAccountRepository) : BaseUseCase {
 
-    suspend operator fun invoke(steamId: ULong): Result<Unit> = runCatching {
+    suspend operator fun invoke(steamId: Long): Result<Long> = runCatching {
         steamDatabaseAccountRepository.deleteSteamAccount(steamId)
     }
 }

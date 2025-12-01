@@ -7,7 +7,7 @@ import dmitriy.losev.cs.mappers.LongMapper
 import org.koin.core.annotation.Factory
 
 @Factory
-class CharmSaleOfferMapper(private val longMapper: LongMapper) {
+internal class CharmSaleOfferMapper(private val longMapper: LongMapper) {
 
     fun map(value: Triple<ULong, ULong, ListingInfoDTO>): CharmSaleOfferDSO {
         return CharmSaleOfferDSO(

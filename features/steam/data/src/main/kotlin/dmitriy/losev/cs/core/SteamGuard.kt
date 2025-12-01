@@ -1,6 +1,5 @@
 package dmitriy.losev.cs.core
 
-import dmitriy.losev.cs.FileHandler
 import dmitriy.losev.cs.TimeHandler
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -15,7 +14,7 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 internal class SteamGuard(
-    @Provided private val fileHandler: FileHandler,
+    //@Provided private val fileHandler: FileHandler,
     @Provided private val timeHandler: TimeHandler
 ) {
 
