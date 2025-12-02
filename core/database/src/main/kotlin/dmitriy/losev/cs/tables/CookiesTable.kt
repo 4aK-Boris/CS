@@ -8,7 +8,7 @@ internal object CookiesTable : Table(name = "network.cookies") {
 
     val name = varchar(name = "name", length = 256)
 
-    val value = text(name = "value")
+    val value = binary(name = "value")
 
     val encoding = integer(name = "encoding")
 

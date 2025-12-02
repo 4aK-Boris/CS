@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.handlers
 
+import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.Database
 import dmitriy.losev.cs.cookie.NetworkCookie
 import dmitriy.losev.cs.tables.CookiesTable
@@ -12,7 +13,11 @@ import org.jetbrains.exposed.v1.r2dbc.batchInsert
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 
-internal class CookieHandlerImpl(private val json: Json, private val database: Database) : CookieHandler {
+internal class CookieHandlerImpl(
+    private val json: Json,
+    private val database: Database,
+    private val aesCrypto: AesCrypto
+) : CookieHandler {
 
     override suspend fun saveCookies(steamId: Long, cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
 
@@ -22,7 +27,7 @@ internal class CookieHandlerImpl(private val json: Json, private val database: D
             CookiesTable.batchInsert(data = cookies) { cookie ->
                 set(column = CookiesTable.steamId, value = cookie.steamId)
                 set(column = CookiesTable.name, value = cookie.name)
-                set(column = CookiesTable.value, value = cookie.value)
+                set(column = CookiesTable.value, value = aesCrypto.encrypt(data = cookie.value))
                 set(column = CookiesTable.encoding, value = cookie.encoding)
                 set(column = CookiesTable.maxAge, value = cookie.maxAge)
                 set(column = CookiesTable.expires, value = cookie.expires)
@@ -55,7 +60,7 @@ internal class CookieHandlerImpl(private val json: Json, private val database: D
         return NetworkCookie(
             steamId = resultRow.get(expression = CookiesTable.steamId),
             name = resultRow.get(expression = CookiesTable.name),
-            value = resultRow.get(expression = CookiesTable.value),
+            value = aesCrypto.decrypt(encryptedData = resultRow.get(expression = CookiesTable.value)),
             encoding = resultRow.get(expression = CookiesTable.encoding),
             maxAge = resultRow.getOrNull(expression = CookiesTable.maxAge),
             expires = resultRow.getOrNull(expression = CookiesTable.expires),

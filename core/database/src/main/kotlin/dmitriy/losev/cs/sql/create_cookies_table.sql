@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS network.cookies (
     steam_id BIGINT NOT NULL,
     name VARCHAR(256) NOT NULL,
-    value TEXT NOT NULL,
+    value BYTEA NOT NULL,
     encoding INTEGER NOT NULL,
     max_age INTEGER,
     expires BIGINT,

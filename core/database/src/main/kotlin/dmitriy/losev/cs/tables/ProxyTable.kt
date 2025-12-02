@@ -8,9 +8,9 @@ object ProxyTable: Table(name = "network.proxies") {
 
     val port = integer(name = "port")
 
-    val login = varchar(name = "login", length = 32)
+    val login = binary(name = "login")
 
-    val password = varchar(name = "password", length = 32)
+    val password = binary(name = "password")
 
     val steamId = long(name = "steam_id").nullable()
 

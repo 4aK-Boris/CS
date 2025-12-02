@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.handlers
 
+import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.Database
 import dmitriy.losev.cs.proxy.ProxyConfig
 import dmitriy.losev.cs.proxy.SteamAccountProxyConfig
@@ -18,7 +19,10 @@ import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.updateReturning
 
-internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
+internal class ProxyHandlerImpl(
+    private val database: Database,
+    private val aesCrypto: AesCrypto
+) : ProxyHandler {
 
     override suspend fun addProxyConfigs(proxyConfigs: List<ProxyConfig>): Int = database.suspendTransaction {
         ProxyTable.batchInsert(
@@ -28,8 +32,8 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
         ) { proxyConfig ->
             set(column = ProxyTable.host, value = proxyConfig.host)
             set(column = ProxyTable.port, value = proxyConfig.port)
-            set(column = ProxyTable.login, value = proxyConfig.login)
-            set(column = ProxyTable.password, value = proxyConfig.password)
+            set(column = ProxyTable.login, value = proxyConfig.login.encrypt())
+            set(column = ProxyTable.password, value = proxyConfig.password.encrypt())
             set(column = ProxyTable.steamId, value = null)
         }.count()
     }
@@ -115,8 +119,8 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
         return ProxyConfig.Default(
             host = resultRow.get(expression = ProxyTable.host),
             port = resultRow.get(expression = ProxyTable.port),
-            login = resultRow.get(expression = ProxyTable.login),
-            password = resultRow.get(expression = ProxyTable.password)
+            login = resultRow.get(expression = ProxyTable.login).decrypt(),
+            password = resultRow.get(expression = ProxyTable.password).decrypt()
         )
     }
 
@@ -133,4 +137,8 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
             proxyConfig = proxyConfig
         )
     }
+
+    private fun String.encrypt(): ByteArray = aesCrypto.encrypt(data = this)
+
+    private fun ByteArray.decrypt(): String = aesCrypto.decrypt(encryptedData = this)
 }

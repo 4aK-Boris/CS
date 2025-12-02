@@ -2,8 +2,8 @@
 CREATE TABLE IF NOT EXISTS network.proxies (
     host VARCHAR(32) NOT NULL,
     port INTEGER NOT NULL,
-    login VARCHAR(32) NOT NULL,
-    password VARCHAR(32) NOT NULL,
+    login BYTEA NOT NULL,
+    password BYTEA NOT NULL,
     steam_id BIGINT,
 
     PRIMARY KEY (host, port)

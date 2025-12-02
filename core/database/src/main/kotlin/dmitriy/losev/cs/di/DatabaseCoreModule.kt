@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.di
 
+import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.Context
 import dmitriy.losev.cs.Database
 import dmitriy.losev.cs.cookie.CookieStorageHandlerFactory
@@ -17,13 +18,13 @@ import org.koin.core.annotation.Singleton
 class DatabaseCoreModule {
 
     @Singleton
-    fun getCookieHandler(@Provided json: Json, database: Database): CookieHandler {
-        return CookieHandlerImpl(json, database)
+    fun getCookieHandler(@Provided json: Json, database: Database, aesCrypto: AesCrypto): CookieHandler {
+        return CookieHandlerImpl(json, database, aesCrypto)
     }
 
     @Singleton
-    fun getProxyHandler(database: Database): ProxyHandler {
-        return ProxyHandlerImpl(database)
+    fun getProxyHandler(database: Database, aesCrypto: AesCrypto): ProxyHandler {
+        return ProxyHandlerImpl(database, aesCrypto)
     }
 
     @Singleton

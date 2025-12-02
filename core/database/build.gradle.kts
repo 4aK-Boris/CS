@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.r2dbc.postgresql)
 
     api(projects.core)
+    api(projects.core.crypto)
 }
