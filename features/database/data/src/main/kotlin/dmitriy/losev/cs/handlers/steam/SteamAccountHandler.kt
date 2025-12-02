@@ -17,7 +17,11 @@ internal interface SteamAccountHandler {
 
     suspend fun getSteamAccountBySteamId(steamId: Long): SteamAccountDSO?
 
+    suspend fun getSteamAccountByLogin(login: String): SteamAccountDSO?
+
     suspend fun getActiveSteamAccountBySteamId(steamId: Long): ActiveSteamAccountDSO?
+
+    suspend fun getActiveSteamAccountByLogin(login: String): ActiveSteamAccountDSO?
 
     suspend fun getAllSteamAccounts(): List<SteamAccountDSO>
 

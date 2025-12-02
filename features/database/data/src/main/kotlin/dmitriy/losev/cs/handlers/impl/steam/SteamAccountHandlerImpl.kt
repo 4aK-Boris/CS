@@ -72,10 +72,27 @@ internal class SteamAccountHandlerImpl(private val database: Database) : SteamAc
             .firstOrNull()
     }
 
+    override suspend fun getSteamAccountByLogin(login: String): SteamAccountDSO? = database.suspendTransaction {
+        SteamAccountsTable
+            .selectAll()
+            .where { SteamAccountsTable.login eq login }
+            .map(transform = ::convertToSteamAccount)
+            .firstOrNull()
+    }
+
     override suspend fun getActiveSteamAccountBySteamId(steamId: Long): ActiveSteamAccountDSO? = database.suspendTransaction {
         ActiveSteamAccountsTable
             .selectAll()
             .where { ActiveSteamAccountsTable.steamId eq steamId }
+            .map(transform = ::convertToActiveSteamAccount)
+            .firstOrNull()
+    }
+
+    override suspend fun getActiveSteamAccountByLogin(login: String): ActiveSteamAccountDSO? = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .innerJoin(otherTable = SteamAccountsTable)
+            .select(ActiveSteamAccountsTable.fields)
+            .where { SteamAccountsTable.login eq login }
             .map(transform = ::convertToActiveSteamAccount)
             .firstOrNull()
     }

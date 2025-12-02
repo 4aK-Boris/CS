@@ -8,7 +8,8 @@ import org.koin.core.annotation.Module
         SteamPresentationServiceModule::class,
         SteamPresentationMapperModule::class,
         SteamPresentationDescriptionModule::class,
-        SteamPresentationValidationModule::class
+        SteamPresentationValidationModule::class,
+        SteamPresentationExtractorModule::class
     ]
 )
 class SteamPresentationModule

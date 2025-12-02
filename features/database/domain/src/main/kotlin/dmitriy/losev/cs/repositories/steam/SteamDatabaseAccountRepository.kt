@@ -17,7 +17,11 @@ interface SteamDatabaseAccountRepository {
 
     suspend fun getSteamAccountBySteamId(steamId: Long): SteamAccountDTO?
 
+    suspend fun getSteamAccountByLogin(login: String): SteamAccountDTO?
+
     suspend fun getActiveSteamAccountBySteamId(steamId: Long): ActiveSteamAccountDTO?
+
+    suspend fun getActiveSteamAccountByLogin(login: String): ActiveSteamAccountDTO?
 
     suspend fun getAllSteamAccounts(): List<SteamAccountDTO>
 

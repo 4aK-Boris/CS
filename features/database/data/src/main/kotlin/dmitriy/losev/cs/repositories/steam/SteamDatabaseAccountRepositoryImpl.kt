@@ -47,8 +47,16 @@ internal class SteamDatabaseAccountRepositoryImpl(
         return steamAccountHandler.getSteamAccountBySteamId(steamId)?.toDTO()
     }
 
+    override suspend fun getSteamAccountByLogin(login: String): SteamAccountDTO? {
+        return steamAccountHandler.getSteamAccountByLogin(login)?.toDTO()
+    }
+
     override suspend fun getActiveSteamAccountBySteamId(steamId: Long): ActiveSteamAccountDTO? {
         return steamAccountHandler.getActiveSteamAccountBySteamId(steamId)?.toDTO()
+    }
+
+    override suspend fun getActiveSteamAccountByLogin(login: String): ActiveSteamAccountDTO? {
+        return steamAccountHandler.getActiveSteamAccountByLogin(login)?.toDTO()
     }
 
     override suspend fun getAllSteamAccounts(): List<SteamAccountDTO> {

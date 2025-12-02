@@ -61,17 +61,23 @@ inline fun <reified T : Any, reified R : Any> Route.getHandle(
     crossinline processing: suspend (T) -> Result<R>
 ) {
     get(builder = builder) {
-        val request = extractor(call)
-
-        validation.validate(request).let { result ->
-            if (result.errors.isNotEmpty()) {
-                val messages = result.errors.map { error -> "${error.path}: ${error.message}" }
-                throw ValidationException(messages)
-            }
-        }
+        val request = call.extractValidated(extractor, validation)
 
         processing(request)
             .onSuccess { data -> call.respondSuccess(data) }
             .onFailure { exception -> ExceptionHandler.handleHttpException(call, exception) }
     }
+}
+
+fun <T : Any> ApplicationCall.extractValidated(extractor: (ApplicationCall) -> T, validation: Validation<T>): T {
+
+    val request = extractor(this)
+    val result = validation.validate(request)
+
+    if (result.errors.isNotEmpty()) {
+        val messages = result.errors.map { "${it.path}: ${it.message}" }
+        throw ValidationException(messages)
+    }
+
+    return request
 }

@@ -7,48 +7,49 @@ import dmitriy.losev.cs.core.LOGIN_PARAMETER_NAME
 import dmitriy.losev.cs.core.STEAM_ID_PARAMETER_EXAMPLE
 import dmitriy.losev.cs.core.STEAM_ID_PARAMETER_NAME
 import dmitriy.losev.cs.core.TAG
+import dmitriy.losev.cs.models.GetActiveSteamAccountResponseModel
 import dmitriy.losev.cs.models.GetSteamAccountResponseModel
-import dmitriy.losev.cs.models.UpsertSteamAccountRequestModel
-import dmitriy.losev.cs.models.UpsertSteamAccountResponseModel
+import dmitriy.losev.cs.models.UpsertActiveSteamAccountRequestModel
+import dmitriy.losev.cs.models.UpsertActiveSteamAccountResponseModel
 import io.github.smiley4.ktoropenapi.config.RouteConfig
 import io.ktor.http.HttpStatusCode
 import org.koin.core.annotation.Singleton
 
 @Singleton
-class SteamAccountDescription: BaseDescription() {
+class ActiveSteamAccountDescription: BaseDescription() {
 
-    fun upsertSteamAccountDescription(routeConfig: RouteConfig) {
+    fun upsertActiveSteamAccountDescription(routeConfig: RouteConfig) {
 
         with(routeConfig) {
 
             tags(TAG)
 
-            summary = "Добавить или обновить Steam аккаунт"
-            description = "Создаёт новый аккаунт или обновляет существующий по steamId"
-            operationId = "upsertSteamAccount"
+            summary = "Добавить или обновить активный Steam аккаунт"
+            description = "Создаёт новый аккаунт или обновляет активный по steamId"
+            operationId = "upsertActiveSteamAccount"
 
             request {
 
-                body<UpsertSteamAccountRequestModel> {
+                body<UpsertActiveSteamAccountRequestModel> {
 
                     required = true
 
-                    description = "Данные Steam аккаунта"
+                    description = "Данные активного Steam аккаунта"
 
                     example(name = "Новый аккаунт") {
-                        value = UpsertSteamAccountRequestModel.example
+                        value = UpsertActiveSteamAccountRequestModel.example
                     }
 
                     example(name = "Пустой аккаунт") {
-                        value = UpsertSteamAccountRequestModel.emptyExample
+                        value = UpsertActiveSteamAccountRequestModel.emptyExample
                     }
                 }
             }
 
             response {
                 HttpStatusCode.OK to {
-                    description = "Аккаунт успешно добавлен/обновлён"
-                    body<ApiResponse.Success<UpsertSteamAccountResponseModel>>()
+                    description = "Аккаунт успешно активирован/обновлён"
+                    body<ApiResponse.Success<UpsertActiveSteamAccountResponseModel>>()
                 }
                 HttpStatusCode.BadRequest to {
                     description = "Ошибка валидации"
@@ -58,15 +59,15 @@ class SteamAccountDescription: BaseDescription() {
         }
     }
 
-    fun getSteamAccountBySteamIdDescription(routeConfig: RouteConfig) {
+    fun getActiveSteamAccountBySteamIdDescription(routeConfig: RouteConfig) {
 
         with(routeConfig) {
 
             tags(TAG)
 
-            summary = "Получить данные Steam аккаунта по SteamId"
-            description = "Возвращает данные Steam аккаунта по SteamId"
-            operationId = "getSteamAccountBySteamId"
+            summary = "Получить данные активного Steam аккаунта по SteamId"
+            description = "Возвращает данные активного Steam аккаунта по SteamId"
+            operationId = "getActiveSteamAccountBySteamId"
 
             request {
 
@@ -81,8 +82,8 @@ class SteamAccountDescription: BaseDescription() {
 
             response {
                 HttpStatusCode.OK to {
-                    description = "Данные Steam аккаунта"
-                    body<ApiResponse.Success<GetSteamAccountResponseModel>>()
+                    description = "Данные активного Steam аккаунта"
+                    body<ApiResponse.Success<GetActiveSteamAccountResponseModel>>()
                 }
                 HttpStatusCode.BadRequest to {
                     description = "Ошибка валидации"
@@ -92,15 +93,15 @@ class SteamAccountDescription: BaseDescription() {
         }
     }
 
-    fun getSteamAccountByLoginDescription(routeConfig: RouteConfig) {
+    fun getActiveSteamAccountByLoginDescription(routeConfig: RouteConfig) {
 
         with(routeConfig) {
 
             tags(TAG)
 
-            summary = "Получить данные Steam аккаунта по логину"
-            description = "Возвращает данные Steam аккаунта по логину"
-            operationId = "getSteamAccountByLogin"
+            summary = "Получить данные активного Steam аккаунта по логину"
+            description = "Возвращает данные активного Steam аккаунта по логину"
+            operationId = "getActiveSteamAccountByLogin"
 
             request {
 
@@ -115,7 +116,7 @@ class SteamAccountDescription: BaseDescription() {
 
             response {
                 HttpStatusCode.OK to {
-                    description = "Данные Steam аккаунта"
+                    description = "Данные активного Steam аккаунта"
                     body<ApiResponse.Success<GetSteamAccountResponseModel>>()
                 }
                 HttpStatusCode.BadRequest to {
@@ -126,19 +127,19 @@ class SteamAccountDescription: BaseDescription() {
         }
     }
 
-    fun getAllSteamAccountDescription(routeConfig: RouteConfig) {
+    fun getAllActiveSteamAccountDescription(routeConfig: RouteConfig) {
 
         with(routeConfig) {
 
             tags(TAG)
 
-            summary = "Получить данные всех Steam аккаунтов"
-            description = "Возвращает данные всех Steam аккаунтов"
+            summary = "Получить данные всех активных Steam аккаунтов"
+            description = "Возвращает данные всех активных Steam аккаунтов"
             operationId = "getAllSteamAccounts"
 
             response {
                 HttpStatusCode.OK to {
-                    description = "Данные всех Steam аккаунтов"
+                    description = "Данные всех активных steam аккаунтов"
                     body<ApiResponse.Success<List<GetSteamAccountResponseModel>>>()
                 }
                 HttpStatusCode.BadRequest to {
