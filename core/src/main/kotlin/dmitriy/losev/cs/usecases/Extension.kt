@@ -2,8 +2,6 @@
 
 package dmitriy.losev.cs.usecases
 
-import dmitriy.losev.cs.exceptions.CSPanelException
-
 fun <T> Result<T>.throwException() {
     if (isFailure) {
         exceptionOrNull()?.let {
@@ -21,19 +19,6 @@ inline fun <T> Result<T>.mapWorking(working: (value: T) -> Unit): Result<T> {
         }
 
         else -> this
-    }
-}
-
-inline fun <R, T : R> Result<T>.recoverCatchingWithException(ozonException: CSPanelException, transform: (exception: Throwable) -> R): Result<R> {
-    return when (val exception = exceptionOrNull()) {
-        null -> this
-        else -> runCatching {
-            if (exception::class == ozonException::class) {
-                transform(exception)
-            } else {
-                throw exception
-            }
-        }
     }
 }
 

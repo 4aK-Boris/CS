@@ -9,9 +9,9 @@ import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.http.Cookie
 
 internal fun HttpClientConfig<OkHttpConfig>.configureCookie(
-    steamId: ULong,
+    steamId: Long,
     cookieStorageHandlerFactory: CookieStorageHandlerFactory,
-    cache: Cache<ULong, MutableMap<String, Cookie>>
+    cache: Cache<Long, MutableMap<String, Cookie>>
 ) {
     install(plugin = HttpCookies) {
         storage = PersistentCookiesStorage(cookieStorageHandlerFactory, steamId, cache)

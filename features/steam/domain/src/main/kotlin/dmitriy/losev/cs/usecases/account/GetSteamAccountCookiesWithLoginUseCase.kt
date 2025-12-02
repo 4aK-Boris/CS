@@ -10,7 +10,7 @@ package dmitriy.losev.cs.usecases.account
 //    private val loginUseCase: LoginUseCase
 //) {
 //
-//    suspend operator fun invoke(steamId: ULong, login: String, password: String, sharedSecret: String): Result<SteamAccountCookiesDTO> {
+//    suspend operator fun invoke(steamId: Long, login: String, password: String, sharedSecret: String): Result<SteamAccountCookiesDTO> {
 //        return getSteamAccountCookiesUseCase.invoke(steamId).mapCatching { steamAccountCookies ->
 //            if (steamAccountCookies.expires.isBefore(currentDateTime)) {
 //                throw SteamException.SteamAccountCookiesIsRottenException(steamId)

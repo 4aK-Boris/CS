@@ -2,7 +2,7 @@ package dmitriy.losev.cs.handlers
 
 import dmitriy.losev.cs.Database
 import dmitriy.losev.cs.proxy.ProxyConfig
-import dmitriy.losev.cs.proxy.SteamAccountsProxyConfig
+import dmitriy.losev.cs.proxy.SteamAccountProxyConfig
 import dmitriy.losev.cs.tables.ProxyTable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -14,28 +14,34 @@ import org.jetbrains.exposed.v1.core.isNotNull
 import org.jetbrains.exposed.v1.core.isNull
 import org.jetbrains.exposed.v1.r2dbc.batchInsert
 import org.jetbrains.exposed.v1.r2dbc.deleteWhere
+import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.updateReturning
 
 internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
 
-    override suspend fun addProxies(proxyConfigs: List<ProxyConfig>): Unit = database.suspendTransaction {
-        if (proxyConfigs.isNotEmpty()) {
-            ProxyTable.batchInsert(
-                data = proxyConfigs,
-                ignore = false,
-                shouldReturnGeneratedValues = false
-            ) { proxyConfig ->
-                set(column = ProxyTable.host, value = proxyConfig.host)
-                set(column = ProxyTable.port, value = proxyConfig.port)
-                set(column = ProxyTable.login, value = proxyConfig.login)
-                set(column = ProxyTable.password, value = proxyConfig.password)
-                set(column = ProxyTable.steamId, value = null)
-            }
-        }
+    override suspend fun addProxyConfigs(proxyConfigs: List<ProxyConfig>): Int = database.suspendTransaction {
+        ProxyTable.batchInsert(
+            data = proxyConfigs,
+            ignore = false,
+            shouldReturnGeneratedValues = false
+        ) { proxyConfig ->
+            set(column = ProxyTable.host, value = proxyConfig.host)
+            set(column = ProxyTable.port, value = proxyConfig.port)
+            set(column = ProxyTable.login, value = proxyConfig.login)
+            set(column = ProxyTable.password, value = proxyConfig.password)
+            set(column = ProxyTable.steamId, value = null)
+        }.count()
     }
 
-    override suspend fun getSteamAccountProxyConfigs(): List<SteamAccountsProxyConfig> = database.suspendTransaction {
+    override suspend fun getProxyConfigs(): List<ProxyConfig> = database.suspendTransaction {
+        ProxyTable
+            .selectAll()
+            .map(transform = ::convertToProxyConfig)
+            .toList()
+    }
+
+    override suspend fun getSteamAccountProxyConfigs(): List<SteamAccountProxyConfig> = database.suspendTransaction {
         ProxyTable
             .selectAll()
             .where { ProxyTable.steamId.isNotNull() }
@@ -43,7 +49,7 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
             .toList()
     }
 
-    override suspend fun addSteamAccountProxyConfig(steamId: ULong): ProxyConfig = database.suspendTransaction {
+    override suspend fun addSteamAccountProxyConfig(steamId: Long): ProxyConfig = database.suspendTransaction {
 
         val firstAvailableProxy = ProxyTable
             .selectAll()
@@ -67,7 +73,7 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
         requireNotNull(proxyConfig) { "Error with get proxy config for steamId $steamId" }
     }
 
-    override suspend fun deleteProxy(host: String, port: Int): Int = database.suspendTransaction {
+    override suspend fun deleteProxyConfig(host: String, port: Int): Int = database.suspendTransaction {
         ProxyTable.deleteWhere {
             (ProxyTable.host eq host) and (ProxyTable.port eq port)
         }
@@ -81,6 +87,30 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
             .toInt()
     }
 
+    override suspend fun hasAvailableProxy(): Boolean = database.suspendTransaction {
+        ProxyTable
+            .selectAll()
+            .where { ProxyTable.steamId.isNull() }
+            .empty()
+            .not()
+    }
+
+    override suspend fun hasSteamAccountForProxy(host: String, port: Int): Boolean = database.suspendTransaction {
+        ProxyTable
+            .selectAll()
+            .where { ((ProxyTable.host eq host) and (ProxyTable.port eq port)) and ProxyTable.steamId.isNotNull() }
+            .empty()
+            .not()
+    }
+
+    override suspend fun getSteamIdByProxyConfig(host: String, port: Int): Long? = database.suspendTransaction {
+        ProxyTable
+            .select(ProxyTable.steamId)
+            .where { (ProxyTable.host eq host) and (ProxyTable.port eq port) }
+            .map { resultRow -> resultRow[ProxyTable.steamId] }
+            .firstOrNull()
+    }
+
     private fun convertToProxyConfig(resultRow: ResultRow): ProxyConfig {
         return ProxyConfig.Default(
             host = resultRow.get(expression = ProxyTable.host),
@@ -90,7 +120,7 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
         )
     }
 
-    private fun convertToSteamAccountsProxyConfig(resultRow: ResultRow): SteamAccountsProxyConfig {
+    private fun convertToSteamAccountsProxyConfig(resultRow: ResultRow): SteamAccountProxyConfig {
 
         val steamId = requireNotNull(resultRow.get(expression = ProxyTable.steamId)) {
             "SteamId cannot be null for SteamAccountsProxyConfig"
@@ -98,7 +128,7 @@ internal class ProxyHandlerImpl(private val database: Database) : ProxyHandler {
 
         val proxyConfig = convertToProxyConfig(resultRow)
 
-        return SteamAccountsProxyConfig(
+        return SteamAccountProxyConfig(
             steamId = steamId,
             proxyConfig = proxyConfig
         )

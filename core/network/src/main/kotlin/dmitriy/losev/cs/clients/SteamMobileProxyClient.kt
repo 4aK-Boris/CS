@@ -18,10 +18,10 @@ class SteamMobileProxyClient(
     override val service = Service.STEAM_MOBILE
 
     override val protocol = URLProtocol.HTTPS
-    private val clientCache = mutableMapOf<ULong, HttpClient>()
+    private val clientCache = mutableMapOf<Long, HttpClient>()
     private val mutex = Mutex()
 
-    private suspend fun getClientForSteamId(steamId: ULong): HttpClient {
+    private suspend fun getClientForSteamId(steamId: Long): HttpClient {
         return mutex.withLock {
             clientCache.getOrPut(key = steamId) {
                 httpClientHandler.getProxyHttpClient(steamId)
@@ -30,7 +30,7 @@ class SteamMobileProxyClient(
     }
 
     suspend fun <R : Any> get(
-        steamId: ULong,
+        steamId: Long,
         handle: String,
         responseClazz: KClass<R>,
         params: Map<String, String> = emptyMap(),
@@ -45,7 +45,7 @@ class SteamMobileProxyClient(
     }
 
     suspend fun  getWithTextBody(
-        steamId: ULong,
+        steamId: Long,
         handle: String,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
@@ -59,7 +59,7 @@ class SteamMobileProxyClient(
     }
 
     suspend fun getWithoutResponse(
-        steamId: ULong,
+        steamId: Long,
         handle: String,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
@@ -74,7 +74,7 @@ class SteamMobileProxyClient(
     }
 
     suspend fun <T : Any, R : Any> post(
-        steamId: ULong,
+        steamId: Long,
         handle: String,
         requestClazz: KClass<T>,
         responseClazz: KClass<R>,
@@ -93,7 +93,7 @@ class SteamMobileProxyClient(
     }
 
     suspend fun <R : Any> postWithUrlEncodedForm(
-        steamId: ULong,
+        steamId: Long,
         handle: String,
         responseClazz: KClass<R>,
         formParams: Map<String, String> = emptyMap(),
@@ -114,7 +114,7 @@ class SteamMobileProxyClient(
         }
     }
 
-    suspend fun closeSteamIdClient(steamId: ULong) {
+    suspend fun closeSteamIdClient(steamId: Long) {
         mutex.withLock {
             clientCache.remove(steamId)?.close()
         }

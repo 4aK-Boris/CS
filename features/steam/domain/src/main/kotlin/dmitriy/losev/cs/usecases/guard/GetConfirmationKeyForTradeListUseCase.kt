@@ -3,7 +3,7 @@ package dmitriy.losev.cs.usecases.guard
 //@Factory
 //class GetConfirmationKeyForTradeListUseCase(private val getConfirmationKeyBySteamIdUseCase: GetConfirmationKeyBySteamIdUseCase): BaseUseCase {
 //
-//    suspend operator fun invoke(steamId: ULong): Result<String> {
+//    suspend operator fun invoke(steamId: Long): Result<String> {
 //        return getConfirmationKeyBySteamIdUseCase.invoke(steamId = steamId, tag = TAG)
 //    }
 //

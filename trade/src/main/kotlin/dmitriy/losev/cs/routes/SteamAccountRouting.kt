@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.routes
 
 import dmitriy.losev.cs.descriptions.SteamAccountDescription
-import dmitriy.losev.cs.post
+import dmitriy.losev.cs.postHandle
 import dmitriy.losev.cs.services.SteamAccountService
 import dmitriy.losev.cs.validations.SteamAccountValidation
 import io.ktor.server.routing.Routing
@@ -18,10 +18,19 @@ fun Routing.configureSteamAccountRouting() {
 
     route("/api/steam/accounts/upsert") {
 
-        post(
+        postHandle(
             builder = steamAccountDescription::upsertSteamAccountDescription,
             validation = steamAccountValidation.validateUpsertSteamAccount,
             processing = steamAccountService::upsertAccount
+        )
+    }
+
+    route("/api/steam/accounts/active/upsert") {
+
+        postHandle(
+            builder = steamAccountDescription::upsertActiveSteamAccountDescription,
+            validation = steamAccountValidation.validateUpsertActiveSteamAccount,
+            processing = steamAccountService::upsertActiveAccount
         )
     }
 }

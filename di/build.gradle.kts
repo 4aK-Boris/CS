@@ -19,4 +19,5 @@ dependencies {
     //api(projects.features.datastore.di)
     //api(projects.features.files.di)
     api(projects.features.steam.di)
+    api(projects.features.proxy.di)
 }

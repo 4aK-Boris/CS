@@ -1,7 +1,7 @@
 package dmitriy.losev.cs.cookie
 
 data class NetworkCookie(
-    val steamId: ULong,
+    val steamId: Long,
     val name: String,
     val value: String,
     val encoding: Int,

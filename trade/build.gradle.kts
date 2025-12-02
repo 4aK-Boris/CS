@@ -29,6 +29,7 @@ dependencies {
 //
 //    api(projects.features.pulse.presentation)
     api(projects.features.steam.presentation)
+    api(projects.features.proxy.presentation)
 
     testImplementation(libs.ktor.server.test.host)
 }

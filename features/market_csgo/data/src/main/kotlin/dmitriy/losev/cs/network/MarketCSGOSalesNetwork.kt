@@ -5,7 +5,7 @@ import dmitriy.losev.cs.dso.sales.ItemsIdDSO
 
 internal interface MarketCSGOSalesNetwork {
 
-    suspend fun getItemsId(steamId: ULong): ItemsIdDSO
+    suspend fun getItemsId(steamId: Long): ItemsIdDSO
 
-    suspend fun getItemHistorySales(steamId: ULong, itemId: Int): ItemHistorySalesDSO
+    suspend fun getItemHistorySales(steamId: Long, itemId: Int): ItemHistorySalesDSO
 }

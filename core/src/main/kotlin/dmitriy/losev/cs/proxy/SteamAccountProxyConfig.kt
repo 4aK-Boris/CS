@@ -1,6 +1,6 @@
 package dmitriy.losev.cs.proxy
 
-data class SteamAccountsProxyConfig(
-    val steamId: ULong,
+data class SteamAccountProxyConfig(
+    val steamId: Long,
     val proxyConfig: ProxyConfig
 ): ProxyConfig by proxyConfig

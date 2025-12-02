@@ -14,11 +14,11 @@ internal class MarketCSGOSalesRepositoryImpl(
     private val itemHistorySalesMapper: ItemHistorySalesMapper
 ) : MarketCSGOSalesRepository {
 
-    override suspend fun getItemsId(steamId: ULong): ItemsIdDTO {
+    override suspend fun getItemsId(steamId: Long): ItemsIdDTO {
         return itemsIdMapper.map(value = marketCSGOSalesNetwork.getItemsId(steamId))
     }
 
-    override suspend fun getItemHistorySales(steamId: ULong, itemId: Int): ItemHistorySalesDTO {
+    override suspend fun getItemHistorySales(steamId: Long, itemId: Int): ItemHistorySalesDTO {
         return itemHistorySalesMapper.map(value = marketCSGOSalesNetwork.getItemHistorySales(steamId, itemId))
     }
 }

@@ -24,7 +24,7 @@ class HttpClientHandler(
     @Provided private val context: Context,
     private val cookieStorageHandlerFactory: CookieStorageHandlerFactory,
     private val steamAccountsProxy: SteamAccountsProxy,
-    @Named("PersistentCookieCache") private val persistentCookieCache: Cache<ULong, MutableMap<String, Cookie>>
+    @Named("PersistentCookieCache") private val persistentCookieCache: Cache<Long, MutableMap<String, Cookie>>
 ) {
 
     val httpClient = HttpClient(OkHttp) {
@@ -38,7 +38,7 @@ class HttpClientHandler(
         configureClient()
     }
 
-    fun getProxyHttpClient(steamId: ULong): HttpClient = HttpClient(OkHttp) {
+    fun getProxyHttpClient(steamId: Long): HttpClient = HttpClient(OkHttp) {
 
         val proxyConfig = steamAccountsProxy.getSteamAccountProxyConfig(steamId)
 
@@ -52,7 +52,7 @@ class HttpClientHandler(
         configureClient()
     }
 
-    fun getProxyHttpClient(proxyConfig: ProxyConfig, steamId: ULong = context.steamConfig.defaultSteamId): HttpClient = HttpClient(OkHttp) {
+    fun getProxyHttpClient(proxyConfig: ProxyConfig, steamId: Long = context.steamConfig.defaultSteamId): HttpClient = HttpClient(OkHttp) {
 
         configureJson()
         configureCookie(steamId, cookieStorageHandlerFactory, persistentCookieCache)

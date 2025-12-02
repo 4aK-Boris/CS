@@ -3,7 +3,7 @@ package dmitriy.losev.cs.core.graph.context
 import java.util.concurrent.ConcurrentHashMap
 
 class ExecutionContext(
-    val steamId: ULong,
+    val steamId: Long,
     private val results: MutableMap<String, NodeResult> = mutableMapOf(),
     private val itemPools: MutableMap<String, ItemPool> = ConcurrentHashMap()
 ) {
@@ -99,7 +99,7 @@ class ExecutionContext(
         return buildString {
             appendLine("=== Pools Report for Account: $steamId ===")
             appendLine("Total pools: ${itemPools.size}")
-            appendLine("Total items: $getTotalItemsCount")
+            appendLine("Total items: ${getTotalItemsCount()}")
             appendLine("Total value: ${getTotalValue() / 100.0} руб")
             appendLine()
             itemPools.values.forEach { pool ->

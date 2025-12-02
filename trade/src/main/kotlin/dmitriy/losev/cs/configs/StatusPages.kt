@@ -1,13 +1,10 @@
 package dmitriy.losev.cs.configs
 
 import dmitriy.losev.cs.api.ApiResponse
-import dmitriy.losev.cs.exceptions.UnauthorizedException
-import dmitriy.losev.cs.exceptions.ValidationException
+import dmitriy.losev.cs.exceptions.ExceptionHandler
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.server.application.log
-import io.ktor.server.plugins.NotFoundException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.response.respond
@@ -16,15 +13,7 @@ fun Application.configureStatusPages() {
 
     install(StatusPages) {
 
-        // Ошибки валидации
-        exception<ValidationException> { call, cause ->
-            call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = ApiResponse.Error(message = "Validation failed", code = "VALIDATION_ERROR", details = cause.errors)
-            )
-        }
-
-        // Неверный формат JSON
+        // Неверный формат JSON - обрабатываем отдельно, так как это ошибка Ktor
         exception<ContentTransformationException> { call, cause ->
             call.respond(
                 status = HttpStatusCode.BadRequest,
@@ -32,31 +21,9 @@ fun Application.configureStatusPages() {
             )
         }
 
-        // Не найдено
-        exception<NotFoundException> { call, cause ->
-            call.respond(
-                status = HttpStatusCode.NotFound,
-                message = ApiResponse.Error(message = cause.message ?: "Resource not found", code = "NOT_FOUND")
-            )
-        }
-
-        // Не авторизован
-        exception<UnauthorizedException> { call, cause ->
-            call.respond(
-                status = HttpStatusCode.Unauthorized,
-                message = ApiResponse.Error(message = cause.message ?: "Unauthorized", code = "UNAUTHORIZED")
-            )
-        }
-
-        // Все остальные ошибки (500)
+        // Все остальные исключения обрабатываются через ExceptionHandler
         exception<Throwable> { call, cause ->
-            // Логируем для дебага
-            call.application.log.error("Unhandled exception", cause)
-
-            call.respond(
-                status = HttpStatusCode.InternalServerError,
-                message = ApiResponse.Error(message = "Internal server error", code = "INTERNAL_ERROR")
-            )
+            ExceptionHandler.handleHttpException(call, cause)
         }
 
         // Обработка HTTP статусов

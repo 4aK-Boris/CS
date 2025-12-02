@@ -18,7 +18,7 @@ interface MarketOperations {
      * Покупка предмета на маркетплейсе
      */
     suspend fun buyItem(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemSelector: ItemSelector,
         maxPrice: PriceConstraint
@@ -28,7 +28,7 @@ interface MarketOperations {
      * Продажа предмета на маркетплейсе
      */
     suspend fun sellItem(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         item: PurchasedItem,
         priceStrategy: PriceStrategy
@@ -43,12 +43,12 @@ interface MarketOperations {
     /**
      * Ожидание получения предмета в инвентарь
      */
-    suspend fun waitForItemInInventory(steamId: ULong, item: PurchasedItem)
+    suspend fun waitForItemInInventory(steamId: Long, item: PurchasedItem)
 
     /**
      * Ожидание завершения продажи (когда кто-то купит предмет)
      */
-    suspend fun waitForSaleCompleted(steamId: ULong, saleId: String)
+    suspend fun waitForSaleCompleted(steamId: Long, saleId: String)
 
     /**
      * Ожидание разблокировки денег после продажи на маркетплейсе
@@ -60,7 +60,7 @@ interface MarketOperations {
      * @param minDaysToWait минимальное количество дней ожидания (если null, берется из конфига маркета)
      */
     suspend fun waitForFundsUnlocked(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         saleId: String,
         minDaysToWait: Int? = null
@@ -75,7 +75,7 @@ interface MarketOperations {
      * @param minAmountCents минимальная сумма в копейках
      */
     suspend fun waitForBalanceAvailable(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         minAmountCents: Long
     )
@@ -89,7 +89,7 @@ interface MarketOperations {
      * @param operationType тип операции (buy, sell, withdraw)
      */
     suspend fun waitForMarketCooldown(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         operationType: String
     )
@@ -104,7 +104,7 @@ interface MarketOperations {
      * @param description описание условия для логов
      */
     suspend fun waitForCustomCondition(
-        steamId: ULong,
+        steamId: Long,
         checkInterval: Long,
         maxWaitSeconds: Long,
         description: String
@@ -113,12 +113,12 @@ interface MarketOperations {
     /**
      * Получение текущего баланса на маркете
      */
-    suspend fun getBalance(steamId: ULong, market: Market): Long
+    suspend fun getBalance(steamId: Long, market: Market): Long
 
     /**
      * Проверка, разблокированы ли средства после продажи
      */
-    suspend fun areFundsUnlocked(steamId: ULong, market: Market, saleId: String): Boolean
+    suspend fun areFundsUnlocked(steamId: Long, market: Market, saleId: String): Boolean
 
     // ========== Batch операции ==========
 
@@ -128,7 +128,7 @@ interface MarketOperations {
      * Возвращает список предметов, которые можно купить в рамках бюджета
      */
     suspend fun selectItemsForBatchBuy(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemSelector: ItemSelector,
         maxPrice: PriceConstraint
@@ -138,7 +138,7 @@ interface MarketOperations {
      * Покупка конкретного предмета по ID
      */
     suspend fun buyItemById(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemId: String,
         priceCents: Long
@@ -148,7 +148,7 @@ interface MarketOperations {
      * Параллельная покупка нескольких предметов
      */
     suspend fun buyItemsInParallel(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         items: List<ItemToBuy>
     ): List<PurchasedItem>
@@ -157,7 +157,7 @@ interface MarketOperations {
      * Параллельная продажа нескольких предметов
      */
     suspend fun sellItemsInParallel(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         items: List<PurchasedItem>,
         priceStrategy: PriceStrategy

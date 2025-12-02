@@ -43,7 +43,7 @@ class ServicesNetworkModule {
         @Provided context: Context,
         cookieStorageHandlerFactory: CookieStorageHandlerFactory,
         steamAccountsProxy: SteamAccountsProxy,
-        @Named(value = "PersistentCookieCache") persistentCookieCache: Cache<ULong, MutableMap<String, Cookie>>
+        @Named(value = "PersistentCookieCache") persistentCookieCache: Cache<Long, MutableMap<String, Cookie>>
     ): HttpClientHandler {
         return HttpClientHandler(context, cookieStorageHandlerFactory, steamAccountsProxy, persistentCookieCache)
     }
@@ -51,7 +51,7 @@ class ServicesNetworkModule {
 
     @Singleton
     @Named(value = "PersistentCookieCache")
-    internal fun getPersistentCookieCache(): Cache<ULong, MutableMap<String, Cookie>> {
+    internal fun getPersistentCookieCache(): Cache<Long, MutableMap<String, Cookie>> {
         return Caffeine.newBuilder()
             .expireAfterWrite(30, TimeUnit.DAYS)
             .maximumSize(10_000)

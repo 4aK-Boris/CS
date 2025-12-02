@@ -11,6 +11,6 @@ import org.koin.core.annotation.Provided
 class InsertItemInfoUseCase(@Provided private val itemRepository: ItemRepository): BaseUseCase {
 
     suspend operator fun invoke(itemInfo: ItemInfoDTO): Result<String> = runCatching {
-        itemRepository.insertItemInfo(itemInfo) ?: throw DatabaseException.UnsuccessfulInsertItemInfoException(itemName = itemInfo.name)
+        itemRepository.insertItemInfo(itemInfo) ?: throw DatabaseException("Item info could not be inserted: $itemInfo")
     }
 }

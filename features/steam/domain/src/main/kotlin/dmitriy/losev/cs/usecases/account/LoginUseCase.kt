@@ -4,7 +4,7 @@ package dmitriy.losev.cs.usecases.account
 //class LoginUseCase(@Provided private val steamAccountRepository: SteamAccountRepository) : BaseUseCase {
 //
 //    suspend operator fun invoke(
-//        steamId: ULong,
+//        steamId: Long,
 //        login: String,
 //        encryptedPassword: String,
 //        steamGuardCode: String,

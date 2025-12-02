@@ -14,7 +14,7 @@ import org.jetbrains.exposed.v1.r2dbc.selectAll
 
 internal class CookieHandlerImpl(private val json: Json, private val database: Database) : CookieHandler {
 
-    override suspend fun saveCookies(steamId: ULong, cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
+    override suspend fun saveCookies(steamId: Long, cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
 
         CookiesTable.deleteWhere { CookiesTable.steamId eq steamId }
 
@@ -35,7 +35,7 @@ internal class CookieHandlerImpl(private val json: Json, private val database: D
         }
     }
 
-    override suspend fun getCookies(steamId: ULong): List<NetworkCookie> = database.suspendTransaction {
+    override suspend fun getCookies(steamId: Long): List<NetworkCookie> = database.suspendTransaction {
         CookiesTable
             .selectAll()
             .where { CookiesTable.steamId eq steamId }
@@ -43,7 +43,7 @@ internal class CookieHandlerImpl(private val json: Json, private val database: D
             .toList()
     }
 
-    override suspend fun deleteCookies(steamId: ULong): Unit = database.suspendTransaction {
+    override suspend fun deleteCookies(steamId: Long): Unit = database.suspendTransaction {
         CookiesTable.deleteWhere { CookiesTable.steamId eq steamId }
     }
 

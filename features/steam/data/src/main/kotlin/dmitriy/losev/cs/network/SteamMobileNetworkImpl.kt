@@ -20,7 +20,7 @@ class SteamMobileNetworkImpl(
     @Provided private val steamMobileProxyClient: SteamMobileProxyClient
 ) : SteamMobileNetwork {
 
-    override suspend fun getConfirmations(steamId: ULong, deviceId: String, confirmationKey: String): ConfirmationsResponseDSO {
+    override suspend fun getConfirmations(steamId: Long, deviceId: String, confirmationKey: String): ConfirmationsResponseDSO {
         return steamMobileProxyClient.get(
             steamId = steamId,
             handle = GET_CONFIRMATIONS_HANDLE,
@@ -36,7 +36,7 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun confirmTrade(steamId: ULong, deviceId: String, confirmationKey: String, confirmation: ConfirmationDSO): Boolean {
+    override suspend fun confirmTrade(steamId: Long, deviceId: String, confirmationKey: String, confirmation: ConfirmationDSO): Boolean {
         return steamMobileProxyClient.getWithoutResponse(
             steamId = steamId,
             handle = CONFIRM_TRADE_HANDLE,
@@ -54,7 +54,7 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun getRSAKey(steamId: ULong, login: String): RSAKeyDSO {
+    override suspend fun getRSAKey(steamId: Long, login: String): RSAKeyDSO {
         return steamMobileProxyClient.postWithUrlEncodedForm(
             steamId = steamId,
             handle = GET_RSA_KEY_HANDLE,
@@ -63,7 +63,7 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun login(steamId: ULong, login: String, encryptedPassword: String, steamGuardCode: String, rsaKeyTimeStamp: Long) {
+    override suspend fun login(steamId: Long, login: String, encryptedPassword: String, steamGuardCode: String, rsaKeyTimeStamp: Long) {
         steamMobileProxyClient.postWithUrlEncodedForm(
             steamId = steamId,
             handle = LOGIN_HANDLE,
@@ -84,7 +84,7 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun loginInOtherService(steamId: ULong, openIdGetConfig: OpenIdGetConfigDSO) {
+    override suspend fun loginInOtherService(steamId: Long, openIdGetConfig: OpenIdGetConfigDSO) {
         steamMobileProxyClient.getWithoutResponse(
             steamId = steamId,
             handle = LOGIN_IN_OTHER_SERVICE_HANDLE,
@@ -92,7 +92,7 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun loginInOtherService(steamId: ULong, openIdPostConfig: OpenIdPostConfigDSO) {
+    override suspend fun loginInOtherService(steamId: Long, openIdPostConfig: OpenIdPostConfigDSO) {
         steamMobileProxyClient.getWithoutResponse(
             steamId = steamId,
             handle = LOGIN_IN_OTHER_SERVICE_HANDLE,
@@ -100,14 +100,14 @@ class SteamMobileNetworkImpl(
         )
     }
 
-    override suspend fun getTradeOffers(steamId: ULong): String {
+    override suspend fun getTradeOffers(steamId: Long): String {
         return steamMobileProxyClient.getWithTextBody(
             steamId = steamId,
             handle = GET_TRADE_OFFERS_HANDLE
         )
     }
 
-    override suspend fun acceptTradeOffer(steamId: ULong, sessionId: String, tradeOfferInfo: TradeOfferInfoDSO): TradeOfferAcceptResultDSO {
+    override suspend fun acceptTradeOffer(steamId: Long, sessionId: String, tradeOfferInfo: TradeOfferInfoDSO): TradeOfferAcceptResultDSO {
         return steamMobileProxyClient.postWithUrlEncodedForm(
             steamId = steamId,
             handle = ACCEPT_TRADE_OFFER_HANDLE,

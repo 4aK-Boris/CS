@@ -14,7 +14,7 @@ import org.koin.core.annotation.Singleton
 class MarketOperationsImpl: MarketOperations {
 
     override suspend fun buyItem(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemSelector: ItemSelector,
         maxPrice: PriceConstraint
@@ -23,7 +23,7 @@ class MarketOperationsImpl: MarketOperations {
     }
 
     override suspend fun sellItem(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         item: PurchasedItem,
         priceStrategy: PriceStrategy
@@ -35,40 +35,40 @@ class MarketOperationsImpl: MarketOperations {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForItemInInventory(steamId: ULong, item: PurchasedItem) {
+    override suspend fun waitForItemInInventory(steamId: Long, item: PurchasedItem) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForSaleCompleted(steamId: ULong, saleId: String) {
+    override suspend fun waitForSaleCompleted(steamId: Long, saleId: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForFundsUnlocked(steamId: ULong, market: Market, saleId: String, minDaysToWait: Int?) {
+    override suspend fun waitForFundsUnlocked(steamId: Long, market: Market, saleId: String, minDaysToWait: Int?) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForBalanceAvailable(steamId: ULong, market: Market, minAmountCents: Long) {
+    override suspend fun waitForBalanceAvailable(steamId: Long, market: Market, minAmountCents: Long) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForMarketCooldown(steamId: ULong, market: Market, operationType: String) {
+    override suspend fun waitForMarketCooldown(steamId: Long, market: Market, operationType: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun waitForCustomCondition(steamId: ULong, checkInterval: Long, maxWaitSeconds: Long, description: String) {
+    override suspend fun waitForCustomCondition(steamId: Long, checkInterval: Long, maxWaitSeconds: Long, description: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getBalance(steamId: ULong, market: Market): Long {
+    override suspend fun getBalance(steamId: Long, market: Market): Long {
         TODO("Not yet implemented")
     }
 
-    override suspend fun areFundsUnlocked(steamId: ULong, market: Market, saleId: String): Boolean {
+    override suspend fun areFundsUnlocked(steamId: Long, market: Market, saleId: String): Boolean {
         TODO("Not yet implemented")
     }
 
     override suspend fun selectItemsForBatchBuy(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemSelector: ItemSelector,
         maxPrice: PriceConstraint
@@ -77,7 +77,7 @@ class MarketOperationsImpl: MarketOperations {
     }
 
     override suspend fun buyItemById(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         itemId: String,
         priceCents: Long
@@ -86,7 +86,7 @@ class MarketOperationsImpl: MarketOperations {
     }
 
     override suspend fun buyItemsInParallel(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         items: List<ItemToBuy>
     ): List<PurchasedItem> {
@@ -94,7 +94,7 @@ class MarketOperationsImpl: MarketOperations {
     }
 
     override suspend fun sellItemsInParallel(
-        steamId: ULong,
+        steamId: Long,
         market: Market,
         items: List<PurchasedItem>,
         priceStrategy: PriceStrategy

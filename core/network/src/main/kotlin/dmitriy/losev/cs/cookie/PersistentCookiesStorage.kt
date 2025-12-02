@@ -13,8 +13,8 @@ import kotlinx.coroutines.sync.withLock
 
 internal class PersistentCookiesStorage(
     cookieStorageHandlerFactory: CookieStorageHandlerFactory,
-    private val steamId: ULong,
-    private val cache: Cache<ULong, MutableMap<String, Cookie>>,
+    private val steamId: Long,
+    private val cache: Cache<Long, MutableMap<String, Cookie>>,
 ) : CookiesStorage {
 
     private val loadMutex = Mutex()

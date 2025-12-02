@@ -12,7 +12,7 @@ object ProxyTable: Table(name = "network.proxies") {
 
     val password = varchar(name = "password", length = 32)
 
-    val steamId = ulong(name = "steam_id").nullable()
+    val steamId = long(name = "steam_id").nullable()
 
     override val primaryKey = PrimaryKey(host, port)
 }

@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.validations
 
+import dmitriy.losev.cs.models.UpsertActiveSteamAccountRequestModel
 import dmitriy.losev.cs.models.UpsertSteamAccountRequestModel
 import dmitriy.losev.cs.validation.BaseValidation
 import io.konform.validation.Validation
@@ -35,6 +36,16 @@ class SteamAccountValidation: BaseValidation {
         }
         UpsertSteamAccountRequestModel::deviceId {
             minLength(1) hint "deviceId is required"
+        }
+    }
+
+    val validateUpsertActiveSteamAccount = Validation {
+        UpsertActiveSteamAccountRequestModel::steamId {
+            positiveLong()
+        }
+        UpsertActiveSteamAccountRequestModel::marketCSGOApiToken {
+            minLength(31) hint "marketCSGOApiToken must be 31 characters long"
+            maxLength(31) hint "marketCSGOApiToken must be 31 characters long"
         }
     }
 }

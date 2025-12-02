@@ -4,7 +4,7 @@ import org.jetbrains.exposed.v1.core.Table
 
 internal object CookiesTable : Table(name = "network.cookies") {
 
-    val steamId = ulong(name = "steam_id")
+    val steamId = long(name = "steam_id")
 
     val name = varchar(name = "name", length = 256)
 

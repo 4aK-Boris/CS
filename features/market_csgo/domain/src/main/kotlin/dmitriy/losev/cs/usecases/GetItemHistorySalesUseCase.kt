@@ -8,7 +8,7 @@ import org.koin.core.annotation.Provided
 @Factory
 class GetItemHistorySalesUseCase(@Provided private val marketCSGOSalesRepository: MarketCSGOSalesRepository) : BaseUseCase {
 
-    suspend operator fun invoke(steamId: ULong, itemId: Int): Result<ItemHistorySalesDTO> = runCatching {
+    suspend operator fun invoke(steamId: Long, itemId: Int): Result<ItemHistorySalesDTO> = runCatching {
         marketCSGOSalesRepository.getItemHistorySales(steamId, itemId)
     }
 }

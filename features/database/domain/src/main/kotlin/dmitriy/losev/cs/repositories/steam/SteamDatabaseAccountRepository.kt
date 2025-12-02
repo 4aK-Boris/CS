@@ -2,13 +2,14 @@ package dmitriy.losev.cs.repositories.steam
 
 import dmitriy.losev.cs.dto.steam.ActiveSteamAccountDTO
 import dmitriy.losev.cs.dto.steam.SteamAccountDTO
+import dmitriy.losev.cs.dto.steam.UpsertActiveSteamAccountResponseDTO
 import dmitriy.losev.cs.dto.steam.UpsertSteamAccountResponseDTO
 
 interface SteamDatabaseAccountRepository {
 
     suspend fun upsertSteamAccount(steamAccount: SteamAccountDTO): UpsertSteamAccountResponseDTO?
 
-    suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDTO): Long?
+    suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDTO): UpsertActiveSteamAccountResponseDTO?
 
     suspend fun deleteSteamAccount(steamId: Long): Long
 

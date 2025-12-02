@@ -5,6 +5,7 @@ import dmitriy.losev.cs.configs.configureOpenApi
 import dmitriy.losev.cs.configs.configureSerialization
 import dmitriy.losev.cs.configs.configureStatusPages
 import dmitriy.losev.cs.configs.loadConfig
+import dmitriy.losev.cs.routes.configureProxyRouting
 import dmitriy.losev.cs.routes.configureSteamAccountRouting
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -57,5 +58,6 @@ fun Application.module() {
 
     routing {
         configureSteamAccountRouting()
+        configureProxyRouting()
     }
 }

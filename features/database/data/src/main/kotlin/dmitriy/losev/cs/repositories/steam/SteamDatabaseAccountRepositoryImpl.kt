@@ -2,13 +2,16 @@ package dmitriy.losev.cs.repositories.steam
 
 import dmitriy.losev.cs.dso.steam.ActiveSteamAccountDSO
 import dmitriy.losev.cs.dso.steam.SteamAccountDSO
+import dmitriy.losev.cs.dso.steam.UpsertActiveSteamAccountResponseDSO
 import dmitriy.losev.cs.dso.steam.UpsertSteamAccountResponseDSO
 import dmitriy.losev.cs.dto.steam.ActiveSteamAccountDTO
 import dmitriy.losev.cs.dto.steam.SteamAccountDTO
+import dmitriy.losev.cs.dto.steam.UpsertActiveSteamAccountResponseDTO
 import dmitriy.losev.cs.dto.steam.UpsertSteamAccountResponseDTO
 import dmitriy.losev.cs.handlers.steam.SteamAccountHandler
 import dmitriy.losev.cs.mappers.steam.ActiveSteamAccountMapper
 import dmitriy.losev.cs.mappers.steam.SteamAccountMapper
+import dmitriy.losev.cs.mappers.steam.UpsertActiveSteamAccountResponseMapper
 import dmitriy.losev.cs.mappers.steam.UpsertSteamAccountResponseMapper
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Provided
@@ -18,15 +21,16 @@ internal class SteamDatabaseAccountRepositoryImpl(
     @Provided private val steamAccountHandler: SteamAccountHandler,
     private val steamAccountMapper: SteamAccountMapper,
     private val activeSteamAccountMapper: ActiveSteamAccountMapper,
-    private val upsertSteamAccountResponseMapper: UpsertSteamAccountResponseMapper
+    private val upsertSteamAccountResponseMapper: UpsertSteamAccountResponseMapper,
+    private val upsertActiveSteamAccountResponseMapper: UpsertActiveSteamAccountResponseMapper
 ) : SteamDatabaseAccountRepository {
 
     override suspend fun upsertSteamAccount(steamAccount: SteamAccountDTO): UpsertSteamAccountResponseDTO? {
         return steamAccountHandler.upsertSteamAccount(steamAccount.toDSO())?.toDTO()
     }
 
-    override suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDTO): Long? {
-        return steamAccountHandler.upsertActiveSteamAccount(activeSteamAccount.toDSO())
+    override suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDTO): UpsertActiveSteamAccountResponseDTO? {
+        return steamAccountHandler.upsertActiveSteamAccount(activeSteamAccount.toDSO())?.toDTO()
     }
 
     override suspend fun deleteSteamAccount(steamId: Long): Long {
@@ -68,4 +72,6 @@ internal class SteamDatabaseAccountRepositoryImpl(
     private fun ActiveSteamAccountDTO.toDSO(): ActiveSteamAccountDSO = activeSteamAccountMapper.map(value = this)
 
     private fun UpsertSteamAccountResponseDSO.toDTO(): UpsertSteamAccountResponseDTO = upsertSteamAccountResponseMapper.map(value = this)
+
+    private fun UpsertActiveSteamAccountResponseDSO.toDTO(): UpsertActiveSteamAccountResponseDTO = upsertActiveSteamAccountResponseMapper.map(value = this)
 }

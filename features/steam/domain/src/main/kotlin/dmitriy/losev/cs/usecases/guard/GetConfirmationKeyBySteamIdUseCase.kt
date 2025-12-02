@@ -6,7 +6,7 @@ package dmitriy.losev.cs.usecases.guard
 //    private val getConfirmationKeyUseCase: GetConfirmationKeyUseCase
 //): BaseUseCase {
 //
-//    suspend operator fun invoke(steamId: ULong, tag: String): Result<String> {
+//    suspend operator fun invoke(steamId: Long, tag: String): Result<String> {
 //        return getSteamAccountUseCase.invoke(steamId).mapCatchingInData { steamAccount ->
 //            getConfirmationKeyUseCase.invoke(identitySecret = steamAccount.identitySecret, tag = tag)
 //        }

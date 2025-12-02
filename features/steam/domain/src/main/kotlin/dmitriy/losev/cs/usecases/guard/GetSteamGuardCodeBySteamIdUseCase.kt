@@ -11,7 +11,7 @@ package dmitriy.losev.cs.usecases.guard
 //    private val getSteamGuardCodeUseCase: GetSteamGuardCodeUseCase
 //): BaseUseCase {
 //
-//    suspend operator fun invoke(steamId: ULong): Result<String>  {
+//    suspend operator fun invoke(steamId: Long): Result<String>  {
 //        return getSteamAccountUseCase.invoke(steamId).mapCatchingInData { steamAccount ->
 //            getSteamGuardCodeUseCase.invoke(sharedSecret = steamAccount.sharedSecret)
 //        }

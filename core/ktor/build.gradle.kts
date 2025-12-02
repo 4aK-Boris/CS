@@ -3,7 +3,7 @@ plugins {
     id("test.config")
     id("detekt.config")
     id("serialization.config")
-    id("io.ktor.plugin") version "3.3.3"
+    alias(libs.plugins.ktor)
 }
 
 dependencies {
@@ -18,6 +18,8 @@ dependencies {
 
     implementation(libs.smiley4.openapi)
     implementation(libs.smiley4.swagger)
+
+    api(projects.core)
 
     testImplementation(libs.ktor.server.test.host)
 }

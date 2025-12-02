@@ -8,7 +8,7 @@ import org.koin.core.annotation.Provided
 
 class SteamAccountsProxy(@Provided private val proxyHandler: ProxyHandler) {
 
-    private val proxyCache: Cache<ULong, ProxyConfig> = Caffeine.newBuilder()
+    private val proxyCache: Cache<Long, ProxyConfig> = Caffeine.newBuilder()
         .expireAfterWrite(5, TimeUnit.MINUTES)
         .maximumSize(10_000)
         .build()
@@ -34,16 +34,16 @@ class SteamAccountsProxy(@Provided private val proxyHandler: ProxyHandler) {
         }
     }
 
-    suspend fun addSteamAccountProxy(steamId: ULong) {
+    suspend fun addSteamAccountProxy(steamId: Long) {
         val config = proxyHandler.addSteamAccountProxyConfig(steamId)
         proxyCache.put(steamId, config)
     }
 
-    fun getSteamAccountProxyConfig(steamId: ULong): ProxyConfig {
+    fun getSteamAccountProxyConfig(steamId: Long): ProxyConfig {
         return requireNotNull(proxyCache.getIfPresent(steamId)) { "Proxy for steam account with steamId = $steamId does not exist" }
     }
 
-    fun invalidate(steamId: ULong) {
+    fun invalidate(steamId: Long) {
         proxyCache.invalidate(steamId)
     }
 

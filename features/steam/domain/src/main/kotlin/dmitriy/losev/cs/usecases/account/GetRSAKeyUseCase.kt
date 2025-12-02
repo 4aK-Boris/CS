@@ -10,7 +10,7 @@ package dmitriy.losev.cs.usecases.account
 //@Factory
 //class GetRSAKeyUseCase(@Provided private val steamAccountRepository: SteamAccountRepository): BaseUseCase {
 //
-//    suspend operator fun invoke(steamId: ULong, login: String): Result<RSAKeyDTO> = runCatching {
+//    suspend operator fun invoke(steamId: Long, login: String): Result<RSAKeyDTO> = runCatching {
 //        steamAccountRepository.getRSAKey(steamId, login)
 //    }
 //}

@@ -9,7 +9,7 @@ import org.koin.core.annotation.Provided
 @Factory(binds = [MarketCSGOSalesNetwork::class])
 internal class MarketCSGOSalesNetworkImpl(@Provided private val marketCSGOProxyClient: MarketCSGOProxyClient) : MarketCSGOSalesNetwork {
 
-    override suspend fun getItemsId(steamId: ULong): ItemsIdDSO {
+    override suspend fun getItemsId(steamId: Long): ItemsIdDSO {
         return marketCSGOProxyClient.get(
             steamId = steamId,
             handle = GET_ITEMS_ID_HANDLE,
@@ -17,7 +17,7 @@ internal class MarketCSGOSalesNetworkImpl(@Provided private val marketCSGOProxyC
         )
     }
 
-    override suspend fun getItemHistorySales(steamId: ULong, itemId: Int): ItemHistorySalesDSO {
+    override suspend fun getItemHistorySales(steamId: Long, itemId: Int): ItemHistorySalesDSO {
         return marketCSGOProxyClient.get(
             steamId = steamId,
             handle = GET_ITEM_HISTORY_SALES_HANDLE,

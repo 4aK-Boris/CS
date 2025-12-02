@@ -8,12 +8,12 @@ import org.koin.core.annotation.Module
 @Module(
     includes = [
         //ServicesNetworkModule::class,
-        DatabaseFeatureModule::class,
-        //FloatFeatureModule::class,
-        SteamFeatureModule::class,
         CryptoCoreModule::class,
         ScheduleCoreModule::class,
         DatabaseCoreModule::class,
+        DatabaseFeatureModule::class,
+        SteamFeatureModule::class,
+        ProxyFeatureModule::class,
     ]
 )
 class AppModule

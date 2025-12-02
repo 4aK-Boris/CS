@@ -2,13 +2,14 @@ package dmitriy.losev.cs.handlers.steam
 
 import dmitriy.losev.cs.dso.steam.ActiveSteamAccountDSO
 import dmitriy.losev.cs.dso.steam.SteamAccountDSO
+import dmitriy.losev.cs.dso.steam.UpsertActiveSteamAccountResponseDSO
 import dmitriy.losev.cs.dso.steam.UpsertSteamAccountResponseDSO
 
 internal interface SteamAccountHandler {
 
     suspend fun upsertSteamAccount(steamAccount: SteamAccountDSO): UpsertSteamAccountResponseDSO?
 
-    suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDSO): Long?
+    suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDSO): UpsertActiveSteamAccountResponseDSO?
 
     suspend fun deleteSteamAccount(steamId: Long)
 

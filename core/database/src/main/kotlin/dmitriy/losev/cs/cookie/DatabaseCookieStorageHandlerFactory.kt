@@ -4,7 +4,7 @@ import dmitriy.losev.cs.handlers.CookieHandler
 
 internal class DatabaseCookieStorageHandlerFactory(private val cookieHandler: CookieHandler): CookieStorageHandlerFactory {
 
-    override fun create(steamId: ULong): CookieStorageHandler {
+    override fun create(steamId: Long): CookieStorageHandler {
         return object : CookieStorageHandler {
 
             override suspend fun saveCookies(cookies: List<NetworkCookie>) {
