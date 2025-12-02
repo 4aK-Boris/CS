@@ -4,9 +4,9 @@ import dmitriy.losev.cs.BaseDescription
 import dmitriy.losev.cs.api.ApiResponse
 import dmitriy.losev.cs.core.LOGIN_PARAMETER_EXAMPLE
 import dmitriy.losev.cs.core.LOGIN_PARAMETER_NAME
+import dmitriy.losev.cs.core.STEAM_ACCOUNT_TAG
 import dmitriy.losev.cs.core.STEAM_ID_PARAMETER_EXAMPLE
 import dmitriy.losev.cs.core.STEAM_ID_PARAMETER_NAME
-import dmitriy.losev.cs.core.TAG
 import dmitriy.losev.cs.models.GetSteamAccountResponseModel
 import dmitriy.losev.cs.models.UpsertSteamAccountRequestModel
 import dmitriy.losev.cs.models.UpsertSteamAccountResponseModel
@@ -21,7 +21,7 @@ class SteamAccountDescription: BaseDescription() {
 
         with(routeConfig) {
 
-            tags(TAG)
+            tags(STEAM_ACCOUNT_TAG)
 
             summary = "Добавить или обновить Steam аккаунт"
             description = "Создаёт новый аккаунт или обновляет существующий по steamId"
@@ -62,7 +62,7 @@ class SteamAccountDescription: BaseDescription() {
 
         with(routeConfig) {
 
-            tags(TAG)
+            tags(STEAM_ACCOUNT_TAG)
 
             summary = "Получить данные Steam аккаунта по SteamId"
             description = "Возвращает данные Steam аккаунта по SteamId"
@@ -96,7 +96,7 @@ class SteamAccountDescription: BaseDescription() {
 
         with(routeConfig) {
 
-            tags(TAG)
+            tags(STEAM_ACCOUNT_TAG)
 
             summary = "Получить данные Steam аккаунта по логину"
             description = "Возвращает данные Steam аккаунта по логину"
@@ -130,7 +130,7 @@ class SteamAccountDescription: BaseDescription() {
 
         with(routeConfig) {
 
-            tags(TAG)
+            tags(STEAM_ACCOUNT_TAG)
 
             summary = "Получить данные всех Steam аккаунтов"
             description = "Возвращает данные всех Steam аккаунтов"
