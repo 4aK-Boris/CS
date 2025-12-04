@@ -38,11 +38,11 @@ class SteamAccountValidation: BaseValidation {
         }
     }
 
-    val validateGetSteamAccountBySteamId = Validation {
+    val validateSteamId = Validation {
         positiveLong()
     }
 
-    val validateGetSteamAccountByLogin = Validation {
+    val validateLogin = Validation {
         minLength(1) hint "login is required"
         maxLength(64) hint "login is too long"
     }

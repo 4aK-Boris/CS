@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS network.cookies (
     http_only BOOLEAN NOT NULL,
     extensions TEXT NOT NULL,
 
-    PRIMARY KEY (steam_id, name, domain, path)
+    PRIMARY KEY (steam_id, name, domain, path),
+    FOREIGN KEY (steam_id) REFERENCES steam.active_steam_accounts(steam_id) ON DELETE CASCADE
 );
 
 -- Создание индексов

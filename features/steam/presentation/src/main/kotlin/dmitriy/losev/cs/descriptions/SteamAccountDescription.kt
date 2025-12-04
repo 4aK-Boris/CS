@@ -148,4 +148,72 @@ class SteamAccountDescription: BaseDescription() {
             }
         }
     }
+
+    fun deleteSteamAccountBySteamIdDescription(routeConfig: RouteConfig) {
+
+        with(routeConfig) {
+
+            tags(STEAM_ACCOUNT_TAG)
+
+            summary = "Удалить аккаунт по SteamId"
+            description = "Удаляет аккаунт по SteamId"
+            operationId = "deleteSteamAccountBySteamId"
+
+            request {
+
+                queryParameter<String>(name = STEAM_ID_PARAMETER_NAME) {
+
+                    description = "SteamId аккаунта"
+                    required = true
+
+                    example(name = "Пример") { value = STEAM_ID_PARAMETER_EXAMPLE }
+                }
+            }
+
+            response {
+                HttpStatusCode.OK to {
+                    description = "Steam Id удалённого аккаунта"
+                    body<ApiResponse.Success<GetSteamAccountResponseModel>>()
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Ошибка валидации"
+                    body<ApiResponse.Error>()
+                }
+            }
+        }
+    }
+
+    fun deleteSteamAccountByLoginDescription(routeConfig: RouteConfig) {
+
+        with(routeConfig) {
+
+            tags(STEAM_ACCOUNT_TAG)
+
+            summary = "Удалить аккаунт по логину"
+            description = "Удаляет аккаунт по логину"
+            operationId = "deleteSteamAccountByLogin"
+
+            request {
+
+                queryParameter<String>(name = LOGIN_PARAMETER_NAME) {
+
+                    description = "Логин аккаунта"
+                    required = true
+
+                    example(name = "Пример") { value = LOGIN_PARAMETER_EXAMPLE }
+                }
+            }
+
+            response {
+                HttpStatusCode.OK to {
+                    description = "Steam Id удалённого аккаунта"
+                    body<ApiResponse.Success<GetSteamAccountResponseModel>>()
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Ошибка валидации"
+                    body<ApiResponse.Error>()
+                }
+            }
+        }
+    }
 }

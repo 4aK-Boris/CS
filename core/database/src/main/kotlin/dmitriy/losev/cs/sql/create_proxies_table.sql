@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS network.proxies (
     password BYTEA NOT NULL,
     steam_id BIGINT,
 
-    PRIMARY KEY (host, port)
+    PRIMARY KEY (host, port),
+    FOREIGN KEY (steam_id) REFERENCES steam.active_steam_accounts(steam_id) ON DELETE SET NULL
 );
 
 -- Создание индексов

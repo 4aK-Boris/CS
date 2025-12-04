@@ -7,7 +7,8 @@ import org.koin.core.annotation.Module
         ProxyPresentationServiceModule::class,
         ProxyPresentationMapperModule::class,
         ProxyPresentationDescriptionModule::class,
-        ProxyPresentationValidationModule::class
+        ProxyPresentationValidationModule::class,
+        ProxyPresentationExtractorModule::class
     ]
 )
 class ProxyPresentationModule

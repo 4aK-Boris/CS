@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.routes.steam
 
+import dmitriy.losev.cs.deleteHandle
 import dmitriy.losev.cs.descriptions.SteamAccountDescription
 import dmitriy.losev.cs.extractors.SteamAccountExtractor
 import dmitriy.losev.cs.getHandle
@@ -32,7 +33,7 @@ fun Routing.configureSteamAccountRouting() {
 
             getHandle(
                 builder = steamAccountDescription::getSteamAccountBySteamIdDescription,
-                validation = steamAccountValidation.validateGetSteamAccountBySteamId,
+                validation = steamAccountValidation.validateSteamId,
                 extractor = steamAccountExtractor::extractSteamId,
                 processing = steamAccountService::getSteamAccountBySteamId
             )
@@ -42,10 +43,33 @@ fun Routing.configureSteamAccountRouting() {
 
             getHandle(
                 builder = steamAccountDescription::getSteamAccountByLoginDescription,
-                validation = steamAccountValidation.validateGetSteamAccountByLogin,
+                validation = steamAccountValidation.validateLogin,
                 extractor = steamAccountExtractor::extractLogin,
                 processing = steamAccountService::getSteamAccountByLogin
             )
+        }
+
+        route(path = "/delete") {
+
+            route(path = "/by_steam_id") {
+
+                deleteHandle(
+                    builder = steamAccountDescription::deleteSteamAccountBySteamIdDescription,
+                    validation = steamAccountValidation.validateSteamId,
+                    extractor = steamAccountExtractor::extractSteamId,
+                    processing = steamAccountService::deleteSteamAccountBySteamId
+                )
+            }
+
+            route(path = "/by_login") {
+
+                deleteHandle(
+                    builder = steamAccountDescription::deleteSteamAccountByLoginDescription,
+                    validation = steamAccountValidation.validateLogin,
+                    extractor = steamAccountExtractor::extractLogin,
+                    processing = steamAccountService::deleteSteamAccountByLogin
+                )
+            }
         }
     }
 

@@ -27,14 +27,26 @@ inline fun <reified T: Any, reified R: Any> Route.postHandle(
     }
 }
 
-inline fun <reified T: Any, reified R: Any> Route.deleteHandle(
+inline fun <reified R : Any> Route.deleteHandle(
     noinline builder: RouteConfig.() -> Unit,
-    validation: Validation<T>,
-    crossinline processing: suspend (T) -> Result<R>
+    crossinline processing: suspend () -> Result<R>
 ) {
     delete(builder = builder) {
 
-        val request = call.receiveValidated(validation)
+        processing()
+            .onSuccess { data -> call.respondSuccess(data) }
+            .onFailure { exception -> ExceptionHandler.handleHttpException(call, exception) }
+    }
+}
+
+inline fun <reified T : Any, reified R : Any> Route.deleteHandle(
+    noinline builder: RouteConfig.() -> Unit,
+    validation: Validation<T>,
+    noinline extractor: (ApplicationCall) -> T,
+    crossinline processing: suspend (T) -> Result<R>
+) {
+    delete(builder = builder) {
+        val request = call.extractValidated(extractor, validation)
 
         processing(request)
             .onSuccess { data -> call.respondSuccess(data) }

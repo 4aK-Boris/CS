@@ -19,13 +19,4 @@ class ActiveSteamAccountValidation : BaseValidation {
             maxLength(31) hint "marketCSGOApiToken must be 31 characters long"
         }
     }
-
-    val validateGetActiveSteamAccountBySteamId = Validation {
-        positiveLong()
-    }
-
-    val validateGetActiveSteamAccountByLogin = Validation {
-        minLength(1) hint "login is required"
-        maxLength(64) hint "login is too long"
-    }
 }

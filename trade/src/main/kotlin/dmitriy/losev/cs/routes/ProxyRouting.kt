@@ -2,6 +2,7 @@ package dmitriy.losev.cs.routes
 
 import dmitriy.losev.cs.deleteHandle
 import dmitriy.losev.cs.descriptions.ProxyDescription
+import dmitriy.losev.cs.extractors.ProxyExtractor
 import dmitriy.losev.cs.getHandle
 import dmitriy.losev.cs.postHandle
 import dmitriy.losev.cs.services.ProxyService
@@ -18,6 +19,8 @@ fun Routing.configureProxyRouting() {
 
     val proxyValidation by inject<ProxyValidation>()
 
+    val proxyExtractor by inject<ProxyExtractor>()
+
     route(path = "/api/proxy") {
 
         postHandle(
@@ -29,6 +32,7 @@ fun Routing.configureProxyRouting() {
         deleteHandle(
             builder = proxyDescription::deleteProxyConfigDescription,
             validation = proxyValidation.validateDeleteProxyConfig,
+            extractor = proxyExtractor::extractProxyHostAndPort,
             processing = proxyService::deleteProxyConfig
         )
 

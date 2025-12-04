@@ -2,7 +2,10 @@ package dmitriy.losev.cs.descriptions
 
 import dmitriy.losev.cs.BaseDescription
 import dmitriy.losev.cs.api.ApiResponse
-import dmitriy.losev.cs.models.DeleteProxyConfigRequestModel
+import dmitriy.losev.cs.core.PROXY_HOST_PARAMETER_EXAMPLE
+import dmitriy.losev.cs.core.PROXY_HOST_PARAMETER_NAME
+import dmitriy.losev.cs.core.PROXY_PORT_PARAMETER_EXAMPLE
+import dmitriy.losev.cs.core.PROXY_PORT_PARAMETER_NAME
 import dmitriy.losev.cs.models.GetProxyConfigResponseModel
 import dmitriy.losev.cs.models.GetSteamAccountProxyConfigResponseModel
 import dmitriy.losev.cs.models.UpsertProxyConfigRequestModel
@@ -69,19 +72,20 @@ class ProxyDescription: BaseDescription() {
 
             request {
 
-                body<DeleteProxyConfigRequestModel> {
+                queryParameter<String>(name = PROXY_HOST_PARAMETER_NAME) {
 
+                    description = "Хост прокси"
                     required = true
 
-                    description = "Хост и порт прокси-конфигурации"
+                    example(name = "Пример") { value = PROXY_HOST_PARAMETER_EXAMPLE }
+                }
 
-                    example(name = "Хост и порт") {
-                        value = DeleteProxyConfigRequestModel.example
-                    }
+                queryParameter<Int>(name = PROXY_PORT_PARAMETER_NAME) {
 
-                    example(name = "Пустая запись") {
-                        value = DeleteProxyConfigRequestModel.emptyExample
-                    }
+                    description = "Порт прокси"
+                    required = true
+
+                    example(name = "Пример") { value = PROXY_PORT_PARAMETER_EXAMPLE }
                 }
             }
 

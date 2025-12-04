@@ -10,8 +10,6 @@ import org.koin.core.annotation.Singleton
 class SteamAccountExtractor {
 
     fun extractSteamId(call: ApplicationCall): String {
-        val ex = call.parameters[STEAM_ID_PARAMETER_NAME] ?: EMPTY_STRING
-        println("ex = $ex")
         return call.parameters[STEAM_ID_PARAMETER_NAME] ?: EMPTY_STRING
     }
 
