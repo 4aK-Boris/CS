@@ -8,6 +8,6 @@ enum class Service(val host: String) {
     MARKET_CSGO(host = "market.csgo.com"),
     STEAM_POWERED(host = "api.steampowered.com"),
     STEAM_COMMUNITY(host = "steamcommunity.com"),
-    PROD_MOBILE_PROXY_SERVICE(host = "192.168.1.29:8090"),
+    PROD_MOBILE_PROXY_SERVICE(host = "host.docker.internal:8090"),
     DEV_MOBILE_PROXY_SERVICE(host = "192.168.1.29:8090");
 }
