@@ -5,15 +5,14 @@ CREATE TABLE IF NOT EXISTS steam.active_steam_accounts (
     access_token TEXT NOT NULL,
     refresh_token BYTEA NOT NULL,
     session_id VARCHAR(24) NOT NULL,
-    is_trade BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    access_token_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    refresh_token_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cs_float_token_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (steam_id),
     FOREIGN KEY (steam_id) REFERENCES steam.steam_accounts(steam_id) ON DELETE CASCADE
 );
-
--- Создание индексов
-CREATE INDEX IF NOT EXISTS idx_active_steam_accounts_is_trade ON steam.active_steam_accounts(is_trade);
 
 -- Комментарии к таблице и колонкам
 COMMENT ON TABLE steam.active_steam_accounts IS 'Таблица для хранения активных Steam аккаунтов с токенами доступа';
@@ -22,5 +21,7 @@ COMMENT ON COLUMN steam.active_steam_accounts.market_csgo_api_token IS 'API то
 COMMENT ON COLUMN steam.active_steam_accounts.access_token IS 'Токен доступа для Steam API';
 COMMENT ON COLUMN steam.active_steam_accounts.refresh_token IS 'Токен обновления для продления сессии';
 COMMENT ON COLUMN steam.active_steam_accounts.session_id IS 'Идентификатор сессии';
-COMMENT ON COLUMN steam.active_steam_accounts.is_trade IS 'Флаг, указывающий используется ли аккаунт для торговли';
 COMMENT ON COLUMN steam.active_steam_accounts.created_at IS 'Дата и время создания записи';
+COMMENT ON COLUMN steam.active_steam_accounts.access_token_updated_at IS 'Дата и время последнего обновления access токена';
+COMMENT ON COLUMN steam.active_steam_accounts.refresh_token_updated_at IS 'Дата и время последнего обновления refresh токена';
+COMMENT ON COLUMN steam.active_steam_accounts.cs_float_token_updated_at IS 'Дата и время последнего обновления CS Float токена';

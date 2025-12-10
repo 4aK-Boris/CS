@@ -4,6 +4,7 @@ import dmitriy.losev.cs.Database
 import dmitriy.losev.cs.dso.steam.SteamAccountDSO
 import dmitriy.losev.cs.dso.steam.UpsertSteamAccountResponseDSO
 import dmitriy.losev.cs.handlers.steam.SteamAccountHandler
+import dmitriy.losev.cs.dso.steam.SteamAccountCredentialsDSO
 import dmitriy.losev.cs.tables.steam.SteamAccountsTable
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.deleteReturning
+import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.jetbrains.exposed.v1.r2dbc.upsertReturning
 import org.koin.core.annotation.Singleton
@@ -80,8 +82,25 @@ internal class SteamAccountHandlerImpl(private val database: Database) : SteamAc
             .toList()
     }
 
+    override suspend fun getSteamAccountCredentials(steamId: Long): SteamAccountCredentialsDSO? = database.suspendTransaction {
+        SteamAccountsTable
+            .select(SteamAccountsTable.steamId, SteamAccountsTable.login, SteamAccountsTable.password, SteamAccountsTable.sharedSecret)
+            .where { SteamAccountsTable.steamId eq steamId }
+            .map(transform = ::convertToSteamAccountCredentials)
+            .firstOrNull()
+    }
+
     private fun convertSteamAccountsTableToSteamId(resultRow: ResultRow): Long {
         return resultRow.get(expression = SteamAccountsTable.steamId)
+    }
+
+    private suspend fun convertToSteamAccountCredentials(resultRow: ResultRow): SteamAccountCredentialsDSO {
+        return SteamAccountCredentialsDSO(
+            steamId = resultRow.get(expression = SteamAccountsTable.steamId),
+            login = resultRow.get(expression = SteamAccountsTable.login),
+            password = resultRow.get(expression = SteamAccountsTable.password),
+            sharedSecret = resultRow.get(expression = SteamAccountsTable.sharedSecret)
+        )
     }
 
     private suspend fun convertToUpsertSteamAccountResponse(resultRow: ResultRow): UpsertSteamAccountResponseDSO {

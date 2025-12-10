@@ -1,11 +1,11 @@
 package dmitriy.losev.cs
 
-import java.time.DayOfWeek
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
+import dmitriy.losev.cs.tasks.TaskExecutionLog
+import dmitriy.losev.cs.tasks.TaskLogger
+import dmitriy.losev.cs.tasks.TaskStatus
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -18,312 +18,301 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
- * Расширенный планировщик корутин с:
- *  - глобальным старт-барьером: набор пререквизитов, которые должны один раз успешно завершиться до старта остальных задач;
- *  - локальными зависимостями dependsOnOnce (для строго порядка между отдельными задачами);
- *  - ограничением параллелизма на уровне задачи.
+ * Планировщик корутин с поддержкой:
+ * - Единовременного и периодического запуска задач
+ * - Пропуска задачи, если предыдущая ещё выполняется
+ * - Зависимостей между задачами (ожидание/пропуск)
+ * - Логирования через TaskLogger (можно реализовать для БД)
+ * - Обработки Result и List<Result> через TaskResult
  */
-class AdvancedCoroutineScheduler(private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default) : CoroutineScope {
+class AdvancedCoroutineScheduler(defaultDispatcher: CoroutineDispatcher = Dispatchers.Default, private val logger: TaskLogger) : CoroutineScope {
 
     override val coroutineContext = SupervisorJob() + defaultDispatcher
 
     private val tasks = ConcurrentHashMap<String, Job>()
-    private val taskDispatchers = ConcurrentHashMap<String, CoroutineDispatcher>()
-    private val taskExecutionCounts = ConcurrentHashMap<String, Int>()
+    private val runningTasks = ConcurrentHashMap<String, AtomicBoolean>()
+    private val taskCompletionSignals = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
     private val taskConfigs = ConcurrentHashMap<String, TaskConfig>()
 
-    // ---------- Глобальный старт-барьер ----------
-    @Volatile
-    private var prerequisiteTasks: Set<String> = emptySet()
-    @Volatile
-    private var startBarrier: CompletableDeferred<Unit>? = null
-
-    // ---------- Маркеры "один раз успешно завершилась" + сигналы ожидания ----------
-    private val completedOnce = ConcurrentHashMap<String, Boolean>()
-    private val completedOnceSignal = ConcurrentHashMap<String, CompletableDeferred<Unit>>()
-
-    /** Создаёт/получает сигнал завершения для taskId. */
-    private fun signalOf(taskId: String): CompletableDeferred<Unit> =
-        completedOnceSignal.computeIfAbsent(taskId) { CompletableDeferred() }
-
-    /** Установить глобальные пререквизиты (должны один раз успешно завершиться). */
-    @Synchronized
-    fun setStartupPrerequisites(vararg taskIds: String) {
-        prerequisiteTasks = taskIds.toSet()
-        // Обнуляем фиксацию завершения и сигналы (переустановка барьера предполагается на старте приложения)
-        completedOnce.clear()
-        completedOnceSignal.clear()
-        startBarrier = if (prerequisiteTasks.isEmpty()) null else CompletableDeferred()
-    }
-
-    /** Принудительно открыть барьер (аварийный обход). */
-    fun openBarrierNow() { startBarrier?.complete(Unit) }
-
-    /** Ожидать глобальный барьер, если задача не пререквизит. */
-    private suspend fun awaitStartBarrierIfNeeded(taskId: String) {
-        val barrier = startBarrier ?: return
-        if (taskId !in prerequisiteTasks) barrier.await()
-    }
-
-    /** Ожидать локальные dependsOnOnce для конкретной задачи. */
-    private suspend fun awaitDependsOnOnce(config: TaskConfig) {
-        for (dep in config.dependsOnOnce) {
-            if (completedOnce[dep] == true) continue
-            signalOf(dep).await()
-        }
-    }
-
-    // -----------------------------------------------------------
-    //                    Планирование задач
-    // -----------------------------------------------------------
-
-    /** Запуск функции с определенной периодичностью. */
-    fun scheduleWithPeriod(
+    /**
+     * Запуск задачи с периодичностью.
+     * Если предыдущий запуск ещё выполняется — новый пропускается.
+     *
+     * @param taskId уникальный идентификатор задачи
+     * @param period интервал между запусками (например: 5.minutes, 1.hours, 1.days)
+     * @param initialDelay начальная задержка перед первым запуском
+     * @param config конфигурация задачи (зависимости, пропуски)
+     * @param task функция задачи, возвращающая TaskResult
+     */
+    fun <T> scheduleWithPeriod(
         taskId: String,
-        periodMillis: Long,
-        initialDelayMillis: Long = 0,
+        period: Duration,
+        initialDelay: Duration = 0.seconds,
         config: TaskConfig = TaskConfig(),
-        task: suspend () -> Unit
+        task: suspend () -> TaskResult<T>
     ) {
         cancelTask(taskId)
-        setupTaskDispatcher(taskId, config)
+        runningTasks[taskId] = AtomicBoolean(false)
+        taskConfigs[taskId] = config
 
         val job = launch {
-            delay(timeMillis = initialDelayMillis)
-            while (isActive) {
-                if (config.skipIfRunning && getTaskConcurrency(taskId) >= config.maxConcurrency) {
-                    println("Пропускаем запуск $taskId — все слоты заняты")
-                } else {
-                    // Ждём локальные зависимости и глобальный барьер
-                    awaitDependsOnOnce(config)
-                    awaitStartBarrierIfNeeded(taskId)
-
-                    launch(context = taskDispatchers[taskId]!!) {
-                        executeTask(taskId, task)
-                    }
-                }
-                delay(timeMillis = periodMillis)
-            }
-        }
-        tasks[taskId] = job
-    }
-
-    /** Запуск функции с расписанием (рабочие часы и т.д.). */
-    fun scheduleWithTimeConstraints(
-        taskId: String,
-        periodMinutes: Long,
-        schedule: Schedule,
-        config: TaskConfig = TaskConfig(),
-        task: suspend () -> Unit
-    ) {
-        cancelTask(taskId)
-        setupTaskDispatcher(taskId, config)
-
-        val job = launch {
-            val initialDelay = calculateInitialDelay(schedule)
-            delay(timeMillis = initialDelay)
+            delay(initialDelay)
 
             while (isActive) {
-                val now = ZonedDateTime.now(schedule.timeZone)
-                if (schedule.isTimeAllowed(now)) {
-                    if (config.skipIfRunning && getTaskConcurrency(taskId) >= config.maxConcurrency) {
-                        println("Пропускаем запуск $taskId — все слоты заняты")
-                    } else {
-                        awaitDependsOnOnce(config)
-                        awaitStartBarrierIfNeeded(taskId)
-
-                        launch(context = taskDispatchers[taskId]!!) {
-                            executeTask(taskId, task)
-                        }
-                    }
-                }
-                delay(timeMillis = periodMinutes * 60 * 1000)
+                executeWithDependencies(taskId, config, task)
+                delay(period)
             }
         }
+
         tasks[taskId] = job
     }
 
-    /** Запуск функции еженедельно. */
-    fun scheduleWeekly(
+    /**
+     * Однократный запуск задачи.
+     *
+     * @param taskId уникальный идентификатор задачи
+     * @param delay задержка перед запуском (например: 10.seconds, 1.minutes)
+     * @param config конфигурация задачи (зависимости, пропуски)
+     * @param task функция задачи, возвращающая TaskResult
+     */
+    fun <T> scheduleOnce(
         taskId: String,
-        dayOfWeek: DayOfWeek,
-        time: LocalTime,
-        timeZone: ZoneId = ZoneId.systemDefault(),
+        delay: Duration = 0.seconds,
         config: TaskConfig = TaskConfig(),
-        task: suspend () -> Unit
+        task: suspend () -> TaskResult<T>
     ) {
         cancelTask(taskId)
-        setupTaskDispatcher(taskId, config)
+        runningTasks[taskId] = AtomicBoolean(false)
+        taskConfigs[taskId] = config
 
         val job = launch {
-            while (isActive) {
-                val now = ZonedDateTime.now(timeZone)
-                val nextRun = getNextWeeklyRun(now, dayOfWeek, time)
-                val delayMillis = ChronoUnit.MILLIS.between(now, nextRun)
-
-                delay(timeMillis = delayMillis)
-
-                if (isActive) {
-                    awaitDependsOnOnce(config)
-                    awaitStartBarrierIfNeeded(taskId)
-
-                    launch(context = taskDispatchers[taskId]!!) {
-                        executeTask(taskId, task)
-                    }
-                }
-            }
+            delay(delay)
+            executeWithDependencies(taskId, config, task)
+            tasks.remove(taskId)
+            runningTasks.remove(taskId)
+            taskConfigs.remove(taskId)
         }
+
         tasks[taskId] = job
     }
 
-    /** Запуск функции ежедневно. */
-    fun scheduleDaily(
+    /**
+     * Запуск задачи немедленно (без планирования).
+     * Если задача уже выполняется — пропускается.
+     */
+    suspend fun <T> runNow(
         taskId: String,
-        time: LocalTime,
-        timeZone: ZoneId = ZoneId.systemDefault(),
         config: TaskConfig = TaskConfig(),
-        task: suspend () -> Unit
+        task: suspend () -> TaskResult<T>
     ) {
-        cancelTask(taskId)
-        setupTaskDispatcher(taskId, config)
-
-        val job = launch {
-            while (isActive) {
-                val now = ZonedDateTime.now(timeZone)
-                val todayRun = now.with(time)
-                val nextRun = if (todayRun.isAfter(now)) todayRun else todayRun.plusDays(1)
-                val delayMillis = ChronoUnit.MILLIS.between(now, nextRun)
-
-                delay(timeMillis = delayMillis)
-
-                if (isActive) {
-                    awaitDependsOnOnce(config)
-                    awaitStartBarrierIfNeeded(taskId)
-
-                    launch(context = taskDispatchers[taskId]!!) {
-                        executeTask(taskId, task)
-                    }
-                }
-            }
-        }
-        tasks[taskId] = job
+        runningTasks.putIfAbsent(taskId, AtomicBoolean(false))
+        taskConfigs.putIfAbsent(taskId, config)
+        executeWithDependencies(taskId, config, task)
     }
 
-    /** Однократный запуск. */
-    fun scheduleOnce(
-        taskId: String,
-        delayMillis: Long,
-        config: TaskConfig = TaskConfig(),
-        task: suspend () -> Unit
-    ) {
-        cancelTask(taskId)
-        setupTaskDispatcher(taskId, config)
-
-        val job = launch {
-            delay(timeMillis = delayMillis)
-            awaitDependsOnOnce(config)
-            awaitStartBarrierIfNeeded(taskId)
-
-            launch(context = taskDispatchers[taskId]!!) {
-                executeTask(taskId, task)
-            }
-            tasks.remove(key = taskId)
-        }
-        tasks[taskId] = job
+    /**
+     * Проверяет, выполняется ли задача в данный момент.
+     */
+    fun isTaskRunning(taskId: String): Boolean {
+        return runningTasks[taskId]?.get() ?: false
     }
 
-    // -----------------------------------------------------------
-    //                        Сервисные методы
-    // -----------------------------------------------------------
+    /**
+     * Проверяет, запланирована ли задача.
+     */
+    fun isTaskScheduled(taskId: String): Boolean {
+        return tasks.containsKey(taskId)
+    }
 
-    /** Текущее число выполняющихся экземпляров задачи. */
-    fun getTaskConcurrency(taskId: String): Int = taskExecutionCounts[taskId] ?: 0
-
-    /** Информация по всем задачам. */
-    fun getTasksInfo(): Map<String, TaskInfo> =
-        tasks.keys.associateWith { taskId ->
+    /**
+     * Информация о всех задачах.
+     */
+    fun getTasksInfo(): Map<String, TaskInfo> {
+        return tasks.keys.associateWith { taskId ->
             TaskInfo(
                 taskId = taskId,
-                isScheduled = tasks.containsKey(taskId),
-                currentConcurrency = getTaskConcurrency(taskId),
-                maxConcurrency = taskConfigs[taskId]?.maxConcurrency ?: 1
+                isScheduled = true,
+                currentConcurrency = if (isTaskRunning(taskId)) 1 else 0,
+                maxConcurrency = 1
             )
         }
-
-    /** Отмена конкретной задачи. */
-    fun cancelTask(taskId: String) {
-        tasks[taskId]?.cancel()
-        tasks.remove(key = taskId)
-        taskDispatchers.remove(key = taskId)
-        taskExecutionCounts.remove(key = taskId)
-        taskConfigs.remove(key = taskId)
-        // Барьер и completedOnce не трогаем.
     }
 
-    /** Остановка всего планировщика. */
+    /**
+     * Отмена задачи по идентификатору.
+     */
+    fun cancelTask(taskId: String) {
+        tasks[taskId]?.cancel()
+        tasks.remove(taskId)
+        runningTasks.remove(taskId)
+        taskConfigs.remove(taskId)
+        taskCompletionSignals.remove(taskId)
+    }
+
+    /**
+     * Остановка всего планировщика.
+     */
     suspend fun shutdown() {
-        tasks.values.forEach { task -> task.cancelAndJoin() }
+        tasks.values.forEach { job -> job.cancelAndJoin() }
         coroutineContext.cancel()
     }
 
-    // -----------------------------------------------------------
-    //                   Внутренняя логика
-    // -----------------------------------------------------------
-
-    private fun setupTaskDispatcher(taskId: String, config: TaskConfig) {
-        taskConfigs[taskId] = config
-        taskDispatchers[taskId] = defaultDispatcher.limitedParallelism(config.maxConcurrency)
-        taskExecutionCounts[taskId] = 0
+    /**
+     * Получить или создать сигнал завершения для задачи.
+     */
+    private fun getOrCreateCompletionSignal(taskId: String): CompletableDeferred<Unit> {
+        return taskCompletionSignals.computeIfAbsent(taskId) { CompletableDeferred() }
     }
 
-    private suspend fun executeTask(taskId: String, task: suspend () -> Unit) {
+    /**
+     * Выполнение задачи с учётом зависимостей.
+     */
+    private suspend fun <T> executeWithDependencies(
+        taskId: String,
+        config: TaskConfig,
+        task: suspend () -> TaskResult<T>
+    ) {
+        // Проверяем skipIfActive — пропускаем, если указанные задачи активны
+        for (blockerTaskId in config.skipIfActive) {
+            if (isTaskRunning(blockerTaskId)) {
+                logSkipped(taskId, "Task $blockerTaskId is active")
+                return
+            }
+        }
+
+        // Ожидаем завершения задач из awaitCompletion
+        for (dependencyTaskId in config.awaitCompletion) {
+            if (isTaskRunning(dependencyTaskId)) {
+                getOrCreateCompletionSignal(dependencyTaskId).await()
+            }
+        }
+
+        executeTaskIfNotRunning(taskId, task)
+    }
+
+    private suspend fun <T> executeTaskIfNotRunning(taskId: String, task: suspend () -> TaskResult<T>) {
+        val isRunning = runningTasks[taskId] ?: AtomicBoolean(false)
+
+        if (!isRunning.compareAndSet(false, true)) {
+            logSkipped(taskId, "Task is already running")
+            return
+        }
+
+        // Создаём новый сигнал для этого запуска
+        taskCompletionSignals[taskId] = CompletableDeferred()
+
+        val startedAt = Instant.now()
+        logStarted(taskId, startedAt)
+
         try {
-            taskExecutionCounts.compute(taskId) { _, count -> (count ?: 0) + 1 }
-            println("Начало $taskId (активных: ${getTaskConcurrency(taskId)})")
+            val result = task()
+            val finishedAt = Instant.now()
+            val durationMillis = finishedAt.toEpochMilli() - startedAt.toEpochMilli()
 
-            task()
-
-            // Помечаем как "один раз успешно завершилась" и сигналим ожидающим
-            if (completedOnce.putIfAbsent(taskId, true) != true) {
-                completedOnceSignal[taskId]?.complete(Unit)
+            if (result.hasErrors) {
+                logFailed(taskId, startedAt, finishedAt, durationMillis, result)
+            } else {
+                logCompleted(taskId, startedAt, finishedAt, durationMillis, result)
             }
-
-            // Если taskId — пререквизит, возможно открываем глобальный барьер
-            if (taskId in prerequisiteTasks) {
-                val barrier = startBarrier
-                if (barrier != null && prerequisiteTasks.all { completedOnce[it] == true }) {
-                    println("Все пререквизиты выполнены: ${prerequisiteTasks.joinToString()}. Открываем барьер.")
-                    barrier.complete(Unit)
-                }
-            }
-
-            println("Конец $taskId")
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            println("Ошибка в задаче $taskId: ${e.message}")
+            val finishedAt = Instant.now()
+            val durationMillis = finishedAt.toEpochMilli() - startedAt.toEpochMilli()
+            logFailed(taskId, startedAt, finishedAt, durationMillis, e)
         } finally {
-            taskExecutionCounts.compute(taskId) { _, count -> ((count ?: 1) - 1).coerceAtLeast(0) }
+            isRunning.set(false)
+            // Сигнализируем о завершении
+            taskCompletionSignals[taskId]?.complete(Unit)
         }
     }
 
-    private fun calculateInitialDelay(schedule: Schedule): Long {
-        val now = ZonedDateTime.now(schedule.timeZone)
-        var next = now
-        while (!schedule.isTimeAllowed(dateTime = next)) {
-            next = next.plusMinutes(1)
-        }
-        return ChronoUnit.MILLIS.between(now, next).coerceAtLeast(0)
+    private suspend fun logStarted(taskId: String, startedAt: Instant) {
+        val log = TaskExecutionLog(
+            taskId = taskId,
+            status = TaskStatus.STARTED,
+            startedAt = startedAt
+        )
+        logger.onTaskStarted(log)
     }
 
-    private fun getNextWeeklyRun(now: ZonedDateTime, dayOfWeek: DayOfWeek, time: LocalTime): ZonedDateTime {
-        var next = now.with(time)
-        if (now.dayOfWeek == dayOfWeek && next.isAfter(now)) return next
-        while (next.dayOfWeek != dayOfWeek || !next.isAfter(now)) {
-            next = next.plusDays(1)
+    private suspend fun logCompleted(
+        taskId: String,
+        startedAt: Instant,
+        finishedAt: Instant,
+        durationMillis: Long,
+        result: TaskResult<*>
+    ) {
+        val log = TaskExecutionLog(
+            taskId = taskId,
+            status = TaskStatus.COMPLETED,
+            startedAt = startedAt,
+            finishedAt = finishedAt,
+            durationMillis = durationMillis,
+            successCount = result.successCount,
+            errorCount = result.errorCount,
+            totalCount = result.totalCount,
+            data = result.data.toString()
+        )
+        logger.onTaskCompleted(log)
+    }
+
+    private suspend fun logFailed(
+        taskId: String,
+        startedAt: Instant,
+        finishedAt: Instant,
+        durationMillis: Long,
+        result: TaskResult<*>
+    ) {
+        val errorMessage = result.errors.joinToString(separator = "; ") { error ->
+            if (error.context != null) "[${error.context}] ${error.message}" else error.message
         }
-        return next
+
+        val log = TaskExecutionLog(
+            taskId = taskId,
+            status = TaskStatus.FAILED,
+            startedAt = startedAt,
+            finishedAt = finishedAt,
+            durationMillis = durationMillis,
+            errorMessage = errorMessage,
+            successCount = result.successCount,
+            errorCount = result.errorCount,
+            totalCount = result.totalCount
+        )
+        logger.onTaskFailed(log)
+    }
+
+    private suspend fun logFailed(
+        taskId: String,
+        startedAt: Instant,
+        finishedAt: Instant,
+        durationMillis: Long,
+        exception: Exception
+    ) {
+        val log = TaskExecutionLog(
+            taskId = taskId,
+            status = TaskStatus.FAILED,
+            startedAt = startedAt,
+            finishedAt = finishedAt,
+            durationMillis = durationMillis,
+            errorMessage = exception.message ?: "Unknown error",
+            errorCount = 1,
+            totalCount = 1
+        )
+        logger.onTaskFailed(log)
+    }
+
+    private suspend fun logSkipped(taskId: String, reason: String? = null) {
+        val log = TaskExecutionLog(
+            taskId = taskId,
+            status = TaskStatus.SKIPPED,
+            startedAt = Instant.now(),
+            errorMessage = reason
+        )
+        logger.onTaskSkipped(log)
     }
 }

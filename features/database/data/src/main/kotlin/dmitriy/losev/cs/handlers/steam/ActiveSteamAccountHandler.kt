@@ -18,4 +18,18 @@ internal interface ActiveSteamAccountHandler {
     suspend fun getAllActiveSteamAccounts(): List<ActiveSteamAccountDSO>
 
     suspend fun getAllActiveSteamAccountsSteamId(): List<Long>
+
+    suspend fun getAccountsWithExpiringAccessToken(): List<Long>
+
+    suspend fun getAccountsWithExpiringRefreshToken(): List<Long>
+
+    suspend fun getAccountsWithExpiringCsFloatToken(): List<Long>
+
+    suspend fun getAccountRefreshToken(steamId: Long): ByteArray?
+
+    suspend fun updateAccessToken(steamId: Long, accessToken: String)
+
+    suspend fun updateRefreshToken(steamId: Long, refreshToken: ByteArray)
+
+    suspend fun updateCsFloatToken(steamId: Long)
 }

@@ -1,5 +1,6 @@
 package dmitriy.losev.cs.repositories.steam
 
+import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.dso.steam.ActiveSteamAccountDSO
 import dmitriy.losev.cs.dso.steam.UpsertActiveSteamAccountResponseDSO
 import dmitriy.losev.cs.dto.steam.ActiveSteamAccountDTO
@@ -13,6 +14,7 @@ import org.koin.core.annotation.Provided
 @Factory(binds = [DatabaseActiveSteamAccountRepository::class])
 internal class DatabaseActiveSteamAccountRepositoryImpl(
     @Provided private val activeSteamAccountHandler: ActiveSteamAccountHandler,
+    @Provided private val aesCrypto: AesCrypto,
     private val activeSteamAccountMapper: ActiveSteamAccountMapper,
     private val upsertActiveSteamAccountResponseMapper: UpsertActiveSteamAccountResponseMapper
 ) : DatabaseActiveSteamAccountRepository {
@@ -43,6 +45,35 @@ internal class DatabaseActiveSteamAccountRepositoryImpl(
 
     override suspend fun getAllActiveSteamAccountsSteamId(): List<Long> {
         return activeSteamAccountHandler.getAllActiveSteamAccountsSteamId()
+    }
+
+    override suspend fun getAccountsWithExpiringAccessToken(): List<Long> {
+        return activeSteamAccountHandler.getAccountsWithExpiringAccessToken()
+    }
+
+    override suspend fun getAccountsWithExpiringRefreshToken(): List<Long> {
+        return activeSteamAccountHandler.getAccountsWithExpiringRefreshToken()
+    }
+
+    override suspend fun getAccountsWithExpiringCsFloatToken(): List<Long> {
+        return activeSteamAccountHandler.getAccountsWithExpiringCsFloatToken()
+    }
+
+    override suspend fun getAccountRefreshToken(steamId: Long): String? {
+        return activeSteamAccountHandler.getAccountRefreshToken(steamId)?.let(block = aesCrypto::decrypt)
+    }
+
+    override suspend fun updateAccessToken(steamId: Long, accessToken: String) {
+        activeSteamAccountHandler.updateAccessToken(steamId, accessToken)
+    }
+
+    override suspend fun updateRefreshToken(steamId: Long, accessToken: String, refreshToken: String) {
+        updateAccessToken(steamId, accessToken)
+        activeSteamAccountHandler.updateRefreshToken(steamId, refreshToken = aesCrypto.encrypt(data = refreshToken))
+    }
+
+    override suspend fun updateCsFloatToken(steamId: Long) {
+        activeSteamAccountHandler.updateCsFloatToken(steamId)
     }
     
     private fun ActiveSteamAccountDSO.toDTO(): ActiveSteamAccountDTO = activeSteamAccountMapper.map(value = this)

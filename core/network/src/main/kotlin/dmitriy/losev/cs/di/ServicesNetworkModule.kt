@@ -4,12 +4,13 @@ import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import dmitriy.losev.cs.Context
 import dmitriy.losev.cs.clients.HttpClientHandler
+import dmitriy.losev.cs.cookie.CookieCacheUpdater
+import dmitriy.losev.cs.cookie.CookieCacheUpdaterImpl
 import dmitriy.losev.cs.cookie.CookieStorageHandlerFactory
+import dmitriy.losev.cs.handlers.CookieHandler
 import dmitriy.losev.cs.handlers.ProxyHandler
-import dmitriy.losev.cs.proxy.SteamAccountsProxy
 import io.ktor.http.Cookie
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
@@ -32,22 +33,14 @@ class ServicesNetworkModule {
     }
 
     @Singleton
-    internal fun getSteamAccountsProxy(@Provided proxyHandler: ProxyHandler): SteamAccountsProxy = runBlocking {
-        SteamAccountsProxy(proxyHandler).apply {
-            initSteamAccountProxies()
-        }
-    }
-
-    @Singleton
     internal fun getHttpClientHandler(
         @Provided context: Context,
         cookieStorageHandlerFactory: CookieStorageHandlerFactory,
-        steamAccountsProxy: SteamAccountsProxy,
+        @Provided proxyHandler: ProxyHandler,
         @Named(value = "PersistentCookieCache") persistentCookieCache: Cache<Long, MutableMap<String, Cookie>>
     ): HttpClientHandler {
-        return HttpClientHandler(context, cookieStorageHandlerFactory, steamAccountsProxy, persistentCookieCache)
+        return HttpClientHandler(context, cookieStorageHandlerFactory, proxyHandler, persistentCookieCache)
     }
-
 
     @Singleton
     @Named(value = "PersistentCookieCache")
@@ -56,5 +49,15 @@ class ServicesNetworkModule {
             .expireAfterWrite(30, TimeUnit.DAYS)
             .maximumSize(10_000)
             .build()
+    }
+
+    @Singleton
+    internal fun getCookieCacheUpdater(
+        @Named(value = "PersistentCookieCache") persistentCookieCache: Cache<Long, MutableMap<String, Cookie>>,
+        @Provided cookieHandler: CookieHandler
+    ): CookieCacheUpdater {
+        return CookieCacheUpdaterImpl(persistentCookieCache).apply {
+            cookieHandler.setCookieCacheUpdater(this)
+        }
     }
 }

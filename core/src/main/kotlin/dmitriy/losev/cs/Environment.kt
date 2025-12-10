@@ -2,23 +2,17 @@ package dmitriy.losev.cs
 
 sealed interface Environment {
 
-    val steamPath: String
-    val csPath: String
-    val csFloatHost: String
+    val mobileProxyHost: String
 
     val isProd: Boolean
 
     object Production : Environment {
-        override val steamPath = "C:\\Program Files (x86)\\Steam\\steam.exe"
-        override val csPath = "E:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive"
-        override val csFloatHost = "localhost"
+        override val mobileProxyHost = "127.0.0.1"
         override val isProd = true
     }
 
-    object Develompment : Environment {
-        override val steamPath = "C:\\Program Files (x86)\\Steam\\steam.exe"
-        override val csPath = "E:\\SteamLibrary\\steamapps\\common\\Counter-Strike Global Offensive"
-        override val csFloatHost = "localhost"
+    object Development : Environment {
+        override val mobileProxyHost = "192.168.1.29"
         override val isProd = false
     }
 }

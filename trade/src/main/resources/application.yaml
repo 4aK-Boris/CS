@@ -13,8 +13,25 @@ ktor:
   csfloat:
     url: "http://csfloat:80"
   app:
-    environment: "prod"
+    environment: "dev"
     debug: true
+  proxy:
+    devices:
+      - deviceId: "e3e65dbd"
+        port: 1070
+        deviceName: "Xiaomi Mi 6"
+        login: "VEVdfm66"
+        password: "5aDce5F5"
+      - deviceId: "82bc3269"
+        port: 1069
+        deviceName: "Xiaomi Mi 6"
+        login: "Hp0lkI7B"
+        password: "mLXIZc2y"
+      - deviceId: "4e5a1437"
+        port: 1068
+        deviceName: "Xiaomi Mi 8 Lite"
+        login: "BNYz6k7d"
+        password: "Fr8hkYw9"
   logging:
     http:
       enabled: true

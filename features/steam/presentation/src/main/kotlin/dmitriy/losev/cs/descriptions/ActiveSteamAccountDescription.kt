@@ -135,12 +135,12 @@ class ActiveSteamAccountDescription: BaseDescription() {
 
             summary = "Получить данные всех активных Steam аккаунтов"
             description = "Возвращает данные всех активных Steam аккаунтов"
-            operationId = "getAllSteamAccounts"
+            operationId = "getAllActiveSteamAccounts"
 
             response {
                 HttpStatusCode.OK to {
                     description = "Данные всех активных steam аккаунтов"
-                    body<ApiResponse.Success<List<GetSteamAccountResponseModel>>>()
+                    body<ApiResponse.Success<List<GetActiveSteamAccountResponseModel>>>()
                 }
                 HttpStatusCode.BadRequest to {
                     description = "Ошибка валидации"

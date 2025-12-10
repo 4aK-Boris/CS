@@ -13,6 +13,7 @@ data class Context(
     val pulseConfig: PulseConfig = PulseConfig(),
     val databaseConfig: DatabaseConfig = DatabaseConfig(),
     val httpLoggingConfig: HttpLoggingConfig = HttpLoggingConfig(),
+    val mobileProxyConfig: MobileProxyConfig = MobileProxyConfig(),
     val aesKey: String = EMPTY_STRING,
     val debug: Boolean = false
 )

@@ -2,13 +2,13 @@ package dmitriy.losev.cs.clients
 
 import dmitriy.losev.cs.proxy.Service
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.URLProtocol
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.koin.core.annotation.Singleton
-import kotlin.reflect.KClass
 
 @Singleton
 class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : BaseNetworkClient() {
@@ -19,7 +19,7 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
     private val clientCache = mutableMapOf<Long, HttpClient>()
     private val mutex = Mutex()
 
-    private suspend fun getClientForSteamId(steamId: Long): HttpClient {
+    suspend fun getClientForSteamId(steamId: Long): HttpClient {
         return mutex.withLock {
             clientCache.getOrPut(key = steamId) {
                 httpClientHandler.getProxyHttpClient(steamId)
@@ -27,10 +27,9 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
         }
     }
 
-    suspend fun <R : Any> get(
+    suspend inline fun <reified R : Any> get(
         steamId: Long,
         handle: String,
-        responseClazz: KClass<R>,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
     ): R {
@@ -39,10 +38,10 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
             handle = handle,
             params = params,
             headers = headers
-        ).getResponseBody(responseClazz)
+        ).body()
     }
 
-    suspend fun  getWithTextBody(
+    suspend inline fun getWithTextBody(
         steamId: Long,
         handle: String,
         params: Map<String, String> = emptyMap(),
@@ -56,7 +55,7 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
         ).bodyAsText()
     }
 
-    suspend fun getWithoutResponse(
+    suspend inline fun getWithoutResponse(
         steamId: Long,
         handle: String,
         params: Map<String, String> = emptyMap(),
@@ -71,11 +70,9 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
         return response.status.isSuccess()
     }
 
-    suspend fun <T : Any, R : Any> post(
+    suspend inline fun <reified T : Any, reified R : Any> post(
         steamId: Long,
         handle: String,
-        requestClazz: KClass<T>,
-        responseClazz: KClass<R>,
         body: T,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
@@ -83,17 +80,15 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
         return postRequest(
             httpClient = getClientForSteamId(steamId),
             handle = handle,
-            requestClazz = requestClazz,
             params = params,
             headers = headers,
             body = body
-        ).getResponseBody(responseClazz)
+        ).body()
     }
 
-    suspend fun <R : Any> postWithUrlEncodedForm(
+    suspend inline fun <reified R : Any> postWithUrlEncodedForm(
         steamId: Long,
         handle: String,
-        responseClazz: KClass<R>,
         formParams: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
     ): R {
@@ -102,7 +97,7 @@ class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : 
             handle = handle,
             formParams = formParams,
             headers = headers
-        ).getResponseBody(responseClazz)
+        ).body()
     }
 
     suspend fun closeAll() {

@@ -8,7 +8,7 @@ internal class DatabaseCookieStorageHandlerFactory(private val cookieHandler: Co
         return object : CookieStorageHandler {
 
             override suspend fun saveCookies(cookies: List<NetworkCookie>) {
-                cookieHandler.saveCookies(steamId = steamId, cookies = cookies)
+                cookieHandler.saveCookies(cookies = cookies)
             }
 
             override suspend fun getCookies(): List<NetworkCookie> {

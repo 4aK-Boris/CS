@@ -30,9 +30,11 @@ internal class PersistentCookiesStorage(
 
         val cookiesMap = cache.getIfPresent(steamId) ?: return emptyList()
 
-        return cookiesMap.values
+        val result = cookiesMap.values
             .filter { cookie -> cookie.matches(requestUrl) && isExpired(cookie).not() }
             .toList()
+
+        return result
     }
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
@@ -41,11 +43,28 @@ internal class PersistentCookiesStorage(
 
         val cookiesMap = cache.get(steamId) { ConcurrentHashMap() }
 
-        val key = generateCookieKey(cookie, requestUrl)
+        val normalizedCookie = if (cookie.domain == null) {
+            cookie.copy(domain = requestUrl.host)
+        } else {
+            cookie
+        }
 
-        cookiesMap[key] = cookie
+        val key = generateCookieKey(normalizedCookie, requestUrl)
+
+        if (shouldDeleteCookie(normalizedCookie)) {
+            cookiesMap.remove(key)
+        } else {
+            cookiesMap[key] = normalizedCookie
+        }
 
         saveCookiesToStorage()
+    }
+
+    private fun shouldDeleteCookie(cookie: Cookie): Boolean {
+        if (cookie.maxAge == 0) return true
+
+        val expiresTimestamp = cookie.expires?.timestamp ?: return false
+        return expiresTimestamp < getTimeMillis()
     }
 
     override fun close() {
@@ -71,17 +90,15 @@ internal class PersistentCookiesStorage(
 
         val networkCookies = cookieStorageHandler.getCookies()
 
-        val cookiesMap = ConcurrentHashMap<String, Cookie>()
+        val cookiesMap = cache.get(steamId) { ConcurrentHashMap() }
 
         networkCookies
             .map(transform = ::convertToKtorCookie)
             .filterNot(predicate = ::isExpired)
             .forEach { cookie ->
                 val key = generateCookieKey(cookie, null)
-                cookiesMap[key] = cookie
+                cookiesMap.putIfAbsent(key, cookie)
             }
-
-        cache.put(steamId, cookiesMap)
     }
 
     private suspend fun saveCookiesToStorage() {

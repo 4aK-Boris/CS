@@ -6,24 +6,33 @@ import dmitriy.losev.cs.dso.steam.UpsertActiveSteamAccountResponseDSO
 import dmitriy.losev.cs.handlers.steam.ActiveSteamAccountHandler
 import dmitriy.losev.cs.tables.steam.ActiveSteamAccountsTable
 import dmitriy.losev.cs.tables.steam.SteamAccountsTable
-import kotlinx.coroutines.flow.first
+import java.time.Instant
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.lessEq
 import org.jetbrains.exposed.v1.r2dbc.deleteReturning
 import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.selectAll
+import org.jetbrains.exposed.v1.r2dbc.update
 import org.jetbrains.exposed.v1.r2dbc.upsertReturning
 import org.koin.core.annotation.Singleton
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @Singleton(binds = [ActiveSteamAccountHandler::class])
 internal class ActiveSteamAccountHandlerImpl(private val database: Database) : ActiveSteamAccountHandler {
 
     override suspend fun upsertActiveSteamAccount(activeSteamAccount: ActiveSteamAccountDSO): UpsertActiveSteamAccountResponseDSO? = database.suspendTransaction {
         ActiveSteamAccountsTable
-            .upsertReturning(returning = listOf(ActiveSteamAccountsTable.steamId)) { upsertStatement ->
+            .upsertReturning(
+                ActiveSteamAccountsTable.steamId,
+                returning = listOf(ActiveSteamAccountsTable.steamId, ActiveSteamAccountsTable.createdAt)
+            ) { upsertStatement ->
                 upsertStatement.set(column = ActiveSteamAccountsTable.steamId, value = activeSteamAccount.steamId)
                 upsertStatement.set(column = ActiveSteamAccountsTable.marketCSGOApiToken, value = activeSteamAccount.marketCSGOApiToken)
                 upsertStatement.set(column = ActiveSteamAccountsTable.accessToken, value = activeSteamAccount.accessToken)
@@ -31,8 +40,17 @@ internal class ActiveSteamAccountHandlerImpl(private val database: Database) : A
                 upsertStatement.set(column = ActiveSteamAccountsTable.sessionId, value = activeSteamAccount.sessionId)
                 upsertStatement.set(column = ActiveSteamAccountsTable.createdAt, value = activeSteamAccount.createdAt)
             }
-            .map(transform = ::convertToUpsertActiveSteamAccountResponse)
             .firstOrNull()
+            ?.let { resultRow ->
+                val steamId = resultRow.get(expression = ActiveSteamAccountsTable.steamId)
+                val createdAt = resultRow.get(expression = ActiveSteamAccountsTable.createdAt)
+                val login = getLoginBySteamId(steamId) ?: error("Couldn't find steam account with Steam ID $steamId")
+                UpsertActiveSteamAccountResponseDSO(
+                    steamId = steamId,
+                    login = login,
+                    createdAt = createdAt
+                )
+            }
     }
 
     override suspend fun deleteActiveSteamAccountBySteamId(steamId: Long): Long? = database.suspendTransaction {
@@ -58,7 +76,7 @@ internal class ActiveSteamAccountHandlerImpl(private val database: Database) : A
         ActiveSteamAccountsTable
             .deleteReturning(
                 returning = listOf(ActiveSteamAccountsTable.steamId),
-                where = { ActiveSteamAccountsTable.steamId eq steamId  }
+                where = { ActiveSteamAccountsTable.steamId eq steamId }
             )
             .map(transform = ::convertActiveSteamAccountsTableToSteamId)
             .firstOrNull()
@@ -91,16 +109,91 @@ internal class ActiveSteamAccountHandlerImpl(private val database: Database) : A
     override suspend fun getAllActiveSteamAccountsSteamId(): List<Long> = database.suspendTransaction {
         ActiveSteamAccountsTable
             .select(ActiveSteamAccountsTable.steamId)
-            .map { resultRow -> resultRow.get(expression = ActiveSteamAccountsTable.steamId) }
+            .map(transform = ::convertActiveSteamAccountsTableToSteamId)
             .toList()
     }
 
-    private suspend fun getLoginBySteamId(steamId: Long): String = database.suspendTransaction {
-        SteamAccountsTable
+    override suspend fun getAccountsWithExpiringAccessToken(): List<Long> = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .select(ActiveSteamAccountsTable.steamId)
+            .where { ActiveSteamAccountsTable.accessTokenUpdatedAt lessEq accessTokenThreshold }
+            .map(transform = ::convertActiveSteamAccountsTableToSteamId)
+            .toList()
+    }
+
+    override suspend fun getAccountsWithExpiringRefreshToken(): List<Long> = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .select(ActiveSteamAccountsTable.steamId)
+            .where { ActiveSteamAccountsTable.refreshTokenUpdatedAt lessEq refreshTokenThreshold }
+            .map(transform = ::convertActiveSteamAccountsTableToSteamId)
+            .toList()
+    }
+
+    override suspend fun getAccountsWithExpiringCsFloatToken(): List<Long> = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .select(ActiveSteamAccountsTable.steamId)
+            .where { ActiveSteamAccountsTable.csFloatTokenUpdatedAt lessEq csFloatTokenThreshold }
+            .map(transform = ::convertActiveSteamAccountsTableToSteamId)
+            .toList()
+    }
+
+    override suspend fun getAccountRefreshToken(steamId: Long): ByteArray? = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .select(ActiveSteamAccountsTable.refreshToken)
+            .where { ActiveSteamAccountsTable.steamId eq steamId }
+            .map(transform = ::convertActiveSteamAccountsTableToRefreshToken)
+            .firstOrNull()
+    }
+
+    override suspend fun updateAccessToken(steamId: Long, accessToken: String): Unit = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .update(
+                where = { ActiveSteamAccountsTable.steamId eq steamId }
+            ) { updateStatement ->
+                updateStatement.set(column = ActiveSteamAccountsTable.accessToken, value = accessToken)
+                updateStatement.set(column = ActiveSteamAccountsTable.accessTokenUpdatedAt, value = currentDateTime)
+            }
+    }
+
+    override suspend fun updateRefreshToken(steamId: Long, refreshToken: ByteArray): Unit = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .update(
+                where = { ActiveSteamAccountsTable.steamId eq steamId }
+            ) { updateStatement ->
+                updateStatement.set(column = ActiveSteamAccountsTable.refreshToken, value = refreshToken)
+                updateStatement.set(column = ActiveSteamAccountsTable.refreshTokenUpdatedAt, value = currentDateTime)
+            }
+    }
+
+    override suspend fun updateCsFloatToken(steamId: Long): Unit = database.suspendTransaction {
+        ActiveSteamAccountsTable
+            .update(
+                where = { ActiveSteamAccountsTable.steamId eq steamId }
+            ) { updateStatement ->
+                updateStatement.set(column = ActiveSteamAccountsTable.csFloatTokenUpdatedAt, value = currentDateTime)
+            }
+    }
+
+    private val currentDateTime: Instant
+        get() = Instant.now()
+
+    private val accessTokenThreshold: Instant
+        get() = currentDateTime.minus(24.hours - 5.minutes)
+
+    private val refreshTokenThreshold: Instant
+        get() = currentDateTime.minus(195.days)
+
+    private val csFloatTokenThreshold: Instant
+        get() = currentDateTime.minus(5.days - 1.hours)
+
+    private fun Instant.minus(duration: Duration): Instant = minusMillis(duration.inWholeMilliseconds)
+
+    private suspend fun getLoginBySteamId(steamId: Long): String? {
+        return SteamAccountsTable
             .select(SteamAccountsTable.login)
             .where { SteamAccountsTable.steamId eq steamId }
             .map { resultRow -> resultRow[SteamAccountsTable.login] }
-            .first()
+            .firstOrNull()
     }
 
     private fun convertSteamAccountsTableToSteamId(resultRow: ResultRow): Long {
@@ -111,24 +204,18 @@ internal class ActiveSteamAccountHandlerImpl(private val database: Database) : A
         return resultRow.get(expression = ActiveSteamAccountsTable.steamId)
     }
 
-    private suspend fun convertToUpsertActiveSteamAccountResponse(resultRow: ResultRow): UpsertActiveSteamAccountResponseDSO {
-        return resultRow.get(expression = ActiveSteamAccountsTable.steamId).let { steamId ->
-            UpsertActiveSteamAccountResponseDSO(
-                steamId = steamId,
-                login = getLoginBySteamId(steamId),
-                createdAt = resultRow.get(expression = SteamAccountsTable.createdAt)
-            )
-        }
+    private fun convertActiveSteamAccountsTableToRefreshToken(resultRow: ResultRow): ByteArray {
+        return resultRow.get(expression = ActiveSteamAccountsTable.refreshToken)
     }
 
-    private suspend fun convertToActiveSteamAccount(resultRow: ResultRow): ActiveSteamAccountDSO {
+    private fun convertToActiveSteamAccount(resultRow: ResultRow): ActiveSteamAccountDSO {
         return ActiveSteamAccountDSO(
-            steamId = resultRow.get(expression = SteamAccountsTable.steamId),
+            steamId = resultRow.get(expression = ActiveSteamAccountsTable.steamId),
             marketCSGOApiToken = resultRow.get(expression = ActiveSteamAccountsTable.marketCSGOApiToken),
             accessToken = resultRow.get(expression = ActiveSteamAccountsTable.accessToken),
             refreshToken = resultRow.get(expression = ActiveSteamAccountsTable.refreshToken),
             sessionId = resultRow.get(expression = ActiveSteamAccountsTable.sessionId),
-            createdAt = resultRow.get(expression = SteamAccountsTable.createdAt)
+            createdAt = resultRow.get(expression = ActiveSteamAccountsTable.createdAt)
         )
     }
 }

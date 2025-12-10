@@ -18,4 +18,18 @@ interface DatabaseActiveSteamAccountRepository {
     suspend fun getAllActiveSteamAccounts(): List<ActiveSteamAccountDTO>
 
     suspend fun getAllActiveSteamAccountsSteamId(): List<Long>
+
+    suspend fun getAccountsWithExpiringAccessToken(): List<Long>
+
+    suspend fun getAccountsWithExpiringRefreshToken(): List<Long>
+
+    suspend fun getAccountsWithExpiringCsFloatToken(): List<Long>
+
+    suspend fun getAccountRefreshToken(steamId: Long): String?
+
+    suspend fun updateAccessToken(steamId: Long, accessToken: String)
+
+    suspend fun updateRefreshToken(steamId: Long, accessToken: String, refreshToken: String)
+
+    suspend fun updateCsFloatToken(steamId: Long)
 }

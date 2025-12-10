@@ -11,6 +11,8 @@ interface ProxyHandler {
 
     suspend fun getSteamAccountProxyConfigs(): List<SteamAccountProxyConfig>
 
+    suspend fun getProxyConfigBySteamId(steamId: Long): ProxyConfig?
+
     suspend fun addSteamAccountProxyConfig(steamId: Long): ProxyConfig
 
     suspend fun deleteProxyConfig(host: String, port: Int): Int

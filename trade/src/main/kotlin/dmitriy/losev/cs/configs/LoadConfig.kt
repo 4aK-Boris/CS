@@ -2,8 +2,10 @@ package dmitriy.losev.cs.configs
 
 import dmitriy.losev.cs.Context
 import dmitriy.losev.cs.DatabaseConfig
+import dmitriy.losev.cs.MobileProxyDeviceConfig
 import dmitriy.losev.cs.Environment
 import dmitriy.losev.cs.HttpLoggingConfig
+import dmitriy.losev.cs.MobileProxyConfig
 import io.ktor.server.application.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,8 +18,8 @@ fun Application.loadConfig(): Context {
 
     val environment = when (stringEnvironment) {
         "prod" -> Environment.Production
-        "dev" -> Environment.Develompment
-        else -> Environment.Develompment
+        "dev" -> Environment.Development
+        else -> Environment.Development
     }
 
     val debug = config.property("ktor.app.debug").getString().toBoolean()
@@ -37,6 +39,16 @@ fun Application.loadConfig(): Context {
     val httpLoggingConfigSensitiveHeaders = httpLoggingConfig.property("sensitiveHeaders").getList().map(transform = String::lowercase)
     val httpLoggingConfigMaxBodySize = httpLoggingConfig.property("maxBodySize").getString().toInt()
 
+    val mobileProxyDeviceConfigs = config.configList("ktor.proxy.devices").map { mobileProxyDeviceConfig ->
+        MobileProxyDeviceConfig(
+            deviceId = mobileProxyDeviceConfig.property("deviceId").getString(),
+            port = mobileProxyDeviceConfig.property("port").getString().toInt(),
+            deviceName = mobileProxyDeviceConfig.property("deviceName").getString(),
+            login = mobileProxyDeviceConfig.property("login").getString(),
+            password = mobileProxyDeviceConfig.property("password").getString()
+        )
+    }
+
     return Context(
         coroutineContext = SupervisorJob() + Dispatchers.IO,
         environment = environment,
@@ -47,6 +59,7 @@ fun Application.loadConfig(): Context {
             databaseUser = databaseUser,
             databasePassword = databasePassword
         ),
+        mobileProxyConfig = MobileProxyConfig(mobileProxyDeviceConfigs),
         httpLoggingConfig = HttpLoggingConfig(
             enabled = httpLoggingConfigEnabled,
             level = httpLoggingConfigLevel,

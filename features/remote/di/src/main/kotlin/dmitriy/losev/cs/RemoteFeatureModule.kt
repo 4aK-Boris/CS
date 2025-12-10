@@ -1,6 +1,6 @@
 package dmitriy.losev.cs
 
-import dmitriy.losev.cs.di.CoreSystemModule
+import dmitriy.losev.cs.di.SystemCoreModule
 import dmitriy.losev.cs.di.RemoteDataModule
 import dmitriy.losev.cs.di.RemoteDomainModule
 import org.koin.core.annotation.Module
@@ -11,7 +11,7 @@ import org.koin.core.annotation.Module
         RemoteDomainModule::class,
         SteamFeatureModule::class,
         CSFeatureModule::class,
-        CoreSystemModule::class
+        SystemCoreModule::class
     ]
 )
 class RemoteFeatureModule

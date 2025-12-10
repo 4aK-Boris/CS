@@ -1,31 +1,26 @@
 package dmitriy.losev.cs.clients
 
-import io.ktor.util.reflect.typeInfo
-import kotlin.reflect.KClass
+import io.ktor.client.call.body
 
-abstract class NetworkClient(private val httpClientHandler: HttpClientHandler): BaseNetworkClient() {
+abstract class NetworkClient(val httpClientHandler: HttpClientHandler): BaseNetworkClient() {
 
-    suspend fun <T : Any, R : Any> post(
+    suspend inline fun <reified T : Any, reified R : Any> post(
         handle: String,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap(),
-        requestClazz: KClass<T>,
-        responseClazz: KClass<R>,
         body: T
     ): R {
         return postRequest(
             httpClient = httpClientHandler.httpClient,
             handle = handle,
-            requestClazz = requestClazz,
             params = params,
             headers = headers,
             body = body
-        ).getResponseBody(responseClazz)
+        ).body()
     }
 
-    suspend fun <R : Any> get(
+    suspend inline fun <reified R : Any> get(
         handle: String,
-        responseClazz: KClass<R>,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap()
     ): R {
@@ -34,23 +29,21 @@ abstract class NetworkClient(private val httpClientHandler: HttpClientHandler): 
             handle = handle,
             params = params,
             headers = headers
-        ).getResponseBody(responseClazz)
+        ).body()
     }
 
-    suspend fun <T : Any, R : Any> postList(
+    suspend inline fun <reified T : Any, reified R : Any> postList(
         handle: String,
         params: Map<String, String> = emptyMap(),
         headers: Map<String, String> = emptyMap(),
-        requestClazz: KClass<T>,
         body: T
     ): List<R> {
         return postRequest(
             httpClient = httpClientHandler.httpClient,
             handle = handle,
-            requestClazz = requestClazz,
             params = params,
             headers = headers,
             body = body
-        ).getResponseBody(typeInfo = typeInfo<List<KClass<R>>>())
+        ).body()
     }
 }

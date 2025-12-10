@@ -7,4 +7,6 @@ interface SteamGuardRepository {
     suspend fun getConfirmationKey(identitySecret: String, tag: String): String
 
     suspend fun encryptPassword(password: String, modulus: String, exponent: String): String
+
+    suspend fun generateSessionId(): String
 }

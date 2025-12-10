@@ -1,23 +1,23 @@
 package dmitriy.losev.cs.services
 
-import dmitriy.losev.cs.dto.steam.ActiveSteamAccountDTO
+import dmitriy.losev.cs.dto.UpsertActiveSteamAccountRequestDTO
 import dmitriy.losev.cs.mappers.GetActiveSteamAccountResponseMapper
 import dmitriy.losev.cs.mappers.UpsertActiveSteamAccountRequestMapper
 import dmitriy.losev.cs.mappers.UpsertActiveSteamAccountResponseMapper
 import dmitriy.losev.cs.models.GetActiveSteamAccountResponseModel
 import dmitriy.losev.cs.models.UpsertActiveSteamAccountRequestModel
 import dmitriy.losev.cs.models.UpsertActiveSteamAccountResponseModel
+import dmitriy.losev.cs.usecases.account.UpsertActiveSteamAccountWithLoginUseCase
 import dmitriy.losev.cs.usecases.steam.account.active.DeleteActiveSteamAccountByLoginUseCase
 import dmitriy.losev.cs.usecases.steam.account.active.DeleteActiveSteamAccountBySteamIdUseCase
 import dmitriy.losev.cs.usecases.steam.account.active.GetActiveSteamAccountByLoginUseCase
 import dmitriy.losev.cs.usecases.steam.account.active.GetActiveSteamAccountBySteamIdUseCase
 import dmitriy.losev.cs.usecases.steam.account.active.GetAllActiveSteamAccountsUseCase
-import dmitriy.losev.cs.usecases.steam.account.active.UpsertActiveSteamAccountUseCase
 import org.koin.core.annotation.Single
 
 @Single
 class ActiveSteamAccountService(
-    private val upsertActiveSteamAccountUseCase: UpsertActiveSteamAccountUseCase,
+    private val upsertActiveSteamAccountWithLoginUseCase: UpsertActiveSteamAccountWithLoginUseCase,
     private val getActiveSteamAccountBySteamIdUseCase: GetActiveSteamAccountBySteamIdUseCase,
     private val getActiveSteamAccountByLoginUseCase: GetActiveSteamAccountByLoginUseCase,
     private val getAllActiveSteamAccountsUseCase: GetAllActiveSteamAccountsUseCase,
@@ -29,7 +29,7 @@ class ActiveSteamAccountService(
 ) {
 
     suspend fun upsertActiveSteamAccount(upsertActiveSteamAccountRequest: UpsertActiveSteamAccountRequestModel): Result<UpsertActiveSteamAccountResponseModel> {
-        return upsertActiveSteamAccountUseCase.invoke(activeSteamAccount = upsertActiveSteamAccountRequest.toDTO()).map(upsertActiveSteamAccountResponseMapper::map)
+        return upsertActiveSteamAccountWithLoginUseCase.invoke(upsertActiveSteamAccountRequest.toDTO()).map(upsertActiveSteamAccountResponseMapper::map)
     }
 
     suspend fun getActiveSteamAccountBySteamId(steamId: String): Result<GetActiveSteamAccountResponseModel> {
@@ -52,5 +52,5 @@ class ActiveSteamAccountService(
         return deleteActiveSteamAccountByLoginUseCase.invoke(login).map(transform = Long::toString)
     }
 
-    private fun UpsertActiveSteamAccountRequestModel.toDTO(): ActiveSteamAccountDTO = upsertActiveSteamAccountRequestMapper.map(value = this)
+    private fun UpsertActiveSteamAccountRequestModel.toDTO(): UpsertActiveSteamAccountRequestDTO = upsertActiveSteamAccountRequestMapper.map(value = this)
 }

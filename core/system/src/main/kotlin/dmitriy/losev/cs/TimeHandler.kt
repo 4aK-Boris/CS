@@ -10,4 +10,7 @@ class TimeHandler {
 
     val currentTime: Long
         get() = System.currentTimeMillis()
+
+    val steamGuardCodeTime: Long
+        get() = currentTimeInSeconds / 30L
 }

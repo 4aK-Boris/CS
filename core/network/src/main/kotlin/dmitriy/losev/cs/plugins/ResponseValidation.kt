@@ -11,7 +11,9 @@ internal fun HttpClientConfig<OkHttpConfig>.configureResponseValidation() {
 
     HttpResponseValidator {
         validateResponse { response ->
-            if (response.status.isSuccess().not()) {
+            val status = response.status
+            val isRedirect = status.value in 300..399
+            if (status.isSuccess().not() && isRedirect.not()) {
                 throw NetworkException(message = response.bodyAsText())
             }
         }

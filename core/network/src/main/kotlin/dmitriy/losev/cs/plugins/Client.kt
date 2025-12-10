@@ -12,7 +12,7 @@ internal fun HttpClientConfig<OkHttpConfig>.configureClient() {
     engine {
         config {
 
-            dispatcher(okHttpDispatcher)
+            dispatcher(createDispatcher())
 
             protocols(protocols = listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
 
@@ -26,13 +26,14 @@ internal fun HttpClientConfig<OkHttpConfig>.configureClient() {
             connectionPool(ConnectionPool(maxIdleConnections = 8, keepAliveDuration = 4, timeUnit = TimeUnit.MINUTES))
 
             followRedirects(followRedirects = false)
+            followSslRedirects(followProtocolRedirects = false)
 
             retryOnConnectionFailure(retryOnConnectionFailure = true)
         }
     }
 }
 
-private val okHttpDispatcher = Dispatcher().apply {
+private fun createDispatcher(): Dispatcher = Dispatcher().apply {
     maxRequests = 100
     maxRequestsPerHost = 100
 }

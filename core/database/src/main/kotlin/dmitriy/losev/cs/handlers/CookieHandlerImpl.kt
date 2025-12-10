@@ -2,6 +2,7 @@ package dmitriy.losev.cs.handlers
 
 import dmitriy.losev.cs.AesCrypto
 import dmitriy.losev.cs.Database
+import dmitriy.losev.cs.cookie.CookieCacheUpdater
 import dmitriy.losev.cs.cookie.NetworkCookie
 import dmitriy.losev.cs.tables.CookiesTable
 import kotlinx.coroutines.flow.map
@@ -19,12 +20,17 @@ internal class CookieHandlerImpl(
     private val aesCrypto: AesCrypto
 ) : CookieHandler {
 
-    override suspend fun saveCookies(steamId: Long, cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
+    private var cookieCacheUpdater: CookieCacheUpdater? = null
 
-        CookiesTable.deleteWhere { CookiesTable.steamId eq steamId }
+    override fun setCookieCacheUpdater(updater: CookieCacheUpdater) {
+        cookieCacheUpdater = updater
+    }
 
-        if (cookies.isNotEmpty()) {
-            CookiesTable.batchInsert(data = cookies) { cookie ->
+    override suspend fun saveCookies(cookies: List<NetworkCookie>): Unit = database.suspendTransaction {
+
+            CookiesTable.deleteWhere { CookiesTable.steamId eq cookies.first().steamId }
+
+            CookiesTable.batchInsert(data = cookies,) { cookie ->
                 set(column = CookiesTable.steamId, value = cookie.steamId)
                 set(column = CookiesTable.name, value = cookie.name)
                 set(column = CookiesTable.value, value = aesCrypto.encrypt(data = cookie.value))
@@ -37,7 +43,8 @@ internal class CookieHandlerImpl(
                 set(column = CookiesTable.httpOnly, value = cookie.httpOnly)
                 set(column = CookiesTable.extensions, value = json.encodeToString(cookie.extensions))
             }
-        }
+
+        cookieCacheUpdater?.updateCache(cookies)
     }
 
     override suspend fun getCookies(steamId: Long): List<NetworkCookie> = database.suspendTransaction {

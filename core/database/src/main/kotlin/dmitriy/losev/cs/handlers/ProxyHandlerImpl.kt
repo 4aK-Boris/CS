@@ -53,10 +53,18 @@ internal class ProxyHandlerImpl(
             .toList()
     }
 
+    override suspend fun getProxyConfigBySteamId(steamId: Long): ProxyConfig? = database.suspendTransaction {
+        ProxyTable
+            .selectAll()
+            .where { ProxyTable.steamId eq steamId }
+            .map(transform = ::convertToProxyConfig)
+            .firstOrNull()
+    }
+
     override suspend fun addSteamAccountProxyConfig(steamId: Long): ProxyConfig = database.suspendTransaction {
 
         val firstAvailableProxy = ProxyTable
-            .selectAll()
+            .select(ProxyTable.host, ProxyTable.port)
             .where { ProxyTable.steamId.isNull() }
             .limit(count = 1)
             .map { resultRow -> resultRow[ProxyTable.host] to resultRow[ProxyTable.port] }
@@ -65,14 +73,12 @@ internal class ProxyHandlerImpl(
         requireNotNull(firstAvailableProxy) { "No available proxy found" }
 
         val proxyConfig = ProxyTable.updateReturning(
-            returning = listOf(ProxyTable.host),
+            returning = listOf(ProxyTable.host, ProxyTable.port, ProxyTable.login, ProxyTable.password),
             where = { (ProxyTable.host eq firstAvailableProxy.first) and (ProxyTable.port eq firstAvailableProxy.second) },
             body = { updateStatement ->
                 updateStatement.set(column = ProxyTable.steamId, value = steamId)
             }
-        )
-            .map(transform = ::convertToProxyConfig)
-            .firstOrNull()
+        ).map(transform = ::convertToProxyConfig).firstOrNull()
 
         requireNotNull(proxyConfig) { "Error with get proxy config for steamId $steamId" }
     }

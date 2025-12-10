@@ -15,7 +15,7 @@ import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 
 class Database(private val context: Context) {
 
-    private lateinit var databaseInstanse: R2dbcDatabase
+    private lateinit var databaseInstance: R2dbcDatabase
 
     private lateinit var connectionPool: ConnectionPool
 
@@ -60,8 +60,8 @@ class Database(private val context: Context) {
             connectionPool = getConnectionPool()
         }
 
-        if (::databaseInstanse.isInitialized.not()) {
-            databaseInstanse = R2dbcDatabase.connect(
+        if (::databaseInstance.isInitialized.not()) {
+            databaseInstance = R2dbcDatabase.connect(
                 connectionFactory = connectionPool,
                 databaseConfig = R2dbcDatabaseConfig {
                     useNestedTransactions = false
@@ -80,7 +80,7 @@ class Database(private val context: Context) {
 
     suspend fun <T> suspendTransaction(f: suspend R2dbcTransaction.() -> T): T = withContext(context = context.coroutineContext) {
         connectToDatabase()
-        suspendTransaction(db = databaseInstanse) {
+        suspendTransaction(db = databaseInstance) {
             addLogger(StdOutSqlLogger)
             f()
         }

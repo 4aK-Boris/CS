@@ -2,6 +2,7 @@ package dmitriy.losev.cs.handlers.steam
 
 import dmitriy.losev.cs.dso.steam.SteamAccountDSO
 import dmitriy.losev.cs.dso.steam.UpsertSteamAccountResponseDSO
+import dmitriy.losev.cs.dso.steam.SteamAccountCredentialsDSO
 
 internal interface SteamAccountHandler {
 
@@ -16,4 +17,6 @@ internal interface SteamAccountHandler {
     suspend fun getSteamAccountByLogin(login: String): SteamAccountDSO?
 
     suspend fun getAllSteamAccounts(): List<SteamAccountDSO>
+
+    suspend fun getSteamAccountCredentials(steamId: Long): SteamAccountCredentialsDSO?
 }

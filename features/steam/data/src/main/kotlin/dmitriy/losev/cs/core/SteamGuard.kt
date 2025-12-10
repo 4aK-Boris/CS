@@ -1,33 +1,24 @@
 package dmitriy.losev.cs.core
 
+import dmitriy.losev.cs.EMPTY_STRING
+import dmitriy.losev.cs.HMacCrypto
+import dmitriy.losev.cs.RsaCrypto
 import dmitriy.losev.cs.TimeHandler
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.security.KeyFactory
-import java.security.spec.RSAPublicKeySpec
-import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-import org.koin.core.annotation.Provided
-import org.koin.core.annotation.Singleton
+import kotlin.io.encoding.Base64
 
-@Singleton
 internal class SteamGuard(
-    //@Provided private val fileHandler: FileHandler,
-    @Provided private val timeHandler: TimeHandler
+    private val timeHandler: TimeHandler,
+    private val rsaCrypto: RsaCrypto,
+    private val hMacKeySpec: HMacCrypto
 ) {
-
-    private val mac = Mac.getInstance(MAC_ALGORITHM)
-
-    private val base64Encoder = Base64.getEncoder()
-    private val base64Decoder = Base64.getDecoder()
 
     fun generateSteamGuardCode(sharedSecret: String): String {
 
-        val secret = base64Decoder.decode(sharedSecret)
+        val secret = Base64.decode(sharedSecret)
 
-        val timeStep = timeHandler.currentTimeInSeconds / 30L
+        val timeStep = timeHandler.steamGuardCodeTime
 
         val buffer = ByteBuffer
             .allocate(8)
@@ -36,9 +27,7 @@ internal class SteamGuard(
 
         val timeBytes = buffer.array()
 
-        mac.init(SecretKeySpec(secret, MAC_ALGORITHM))
-
-        val hmac = mac.doFinal(timeBytes)
+        val hmac = hMacKeySpec.generateMac(key = secret, data = timeBytes)
 
         val offset = (hmac.last().toInt() and 0x0F)
 
@@ -59,6 +48,8 @@ internal class SteamGuard(
 
     fun generateConfirmationKey(identitySecret: String, tag: String): String {
 
+        val secret = Base64.decode(identitySecret)
+
         val buffer = ByteArray(8 + tag.length)
 
         for (i in 7 downTo 0) {
@@ -67,11 +58,9 @@ internal class SteamGuard(
 
         tag.toByteArray().copyInto(buffer, 8)
 
-        val secretKey = SecretKeySpec(base64Decoder.decode(identitySecret), MAC_ALGORITHM)
+        val hmac = hMacKeySpec.generateMac(key = secret, data = buffer)
 
-        mac.init(secretKey)
-
-        return base64Encoder.encodeToString(mac.doFinal(buffer))
+        return Base64.encode(hmac)
     }
 
     fun encryptPassword(password: String, modulus: String, exponent: String): String {
@@ -79,23 +68,19 @@ internal class SteamGuard(
         val mod = modulus.toBigInteger(16)
         val exp = exponent.toBigInteger(16)
 
-        val keySpec = RSAPublicKeySpec(mod, exp)
-        val keyFactory = KeyFactory.getInstance(PSA_ALGORITHM)
-        val publicKey = keyFactory.generatePublic(keySpec)
+        val encrypted = rsaCrypto.encrypt(data = password.toByteArray(), modulus = mod, exponent = exp)
 
-        val encrypted = Cipher.getInstance(RSA_CIPHER_ALGORITHM).run {
-            init(Cipher.ENCRYPT_MODE, publicKey)
-            doFinal(password.toByteArray())
-        }
+        return Base64.encode(encrypted)
+    }
 
-        return base64Encoder.encodeToString(encrypted)
+    fun generateSessionId(length: Int = 24): String {
+        return (1..length)
+            .map { CHARS.random() }
+            .joinToString(separator = EMPTY_STRING)
     }
 
     companion object {
-
-        private const val MAC_ALGORITHM = "HmacSHA1"
-        private const val PSA_ALGORITHM = "RSA"
-        private const val RSA_CIPHER_ALGORITHM = "RSA/ECB/PKCS1Padding"
         private val STEAM_CHARS = "23456789BCDFGHJKMNPQRTVWXY".toCharArray()
+        private val CHARS = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
     }
 }

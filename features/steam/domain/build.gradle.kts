@@ -5,7 +5,10 @@ plugins {
 }
 
 dependencies {
+
     api(projects.core)
+
     api(projects.features.files.domain)
     api(projects.features.database.domain)
+    api(projects.features.csFloat.domain)
 }

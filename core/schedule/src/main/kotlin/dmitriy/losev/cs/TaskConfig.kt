@@ -1,14 +1,12 @@
 package dmitriy.losev.cs
 
 /**
- * Конфигурация задачи с индивидуальными ограничениями и зависимостями.
+ * Конфигурация задачи с зависимостями.
  *
- * @param maxConcurrency      максимальное число параллельных экземпляров задачи
- * @param skipIfRunning       пропускать запуск, если уже достигнут maxConcurrency
- * @param dependsOnOnce       список taskId, которые должны ОДИН РАЗ успешно завершиться ДО запуска данной задачи
+ * @param awaitCompletion список taskId, завершения которых нужно дождаться перед запуском
+ * @param skipIfActive список taskId — если любая из этих задач активна, текущая задача пропускается
  */
 data class TaskConfig(
-    val maxConcurrency: Int = 8,
-    val skipIfRunning: Boolean = false,
-    val dependsOnOnce: Set<String> = emptySet()
+    val awaitCompletion: Set<String> = emptySet(),
+    val skipIfActive: Set<String> = emptySet()
 )
