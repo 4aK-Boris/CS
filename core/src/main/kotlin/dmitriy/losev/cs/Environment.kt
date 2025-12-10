@@ -7,7 +7,7 @@ sealed interface Environment {
     val isProd: Boolean
 
     object Production : Environment {
-        override val mobileProxyHost = "127.0.0.1"
+        override val mobileProxyHost = "host.docker.internal"
         override val isProd = true
     }
 
