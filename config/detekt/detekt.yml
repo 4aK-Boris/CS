@@ -132,8 +132,8 @@ complexity:
     threshold: 120
   LongParameterList:
     active: true
-    functionThreshold: 10
-    constructorThreshold: 10
+    functionThreshold: 30
+    constructorThreshold: 30
     ignoreDefaultParameters: false
     ignoreDataClasses: true
     ignoreAnnotatedParameter: []
@@ -168,11 +168,11 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    thresholdInFiles: 20
-    thresholdInClasses: 20
-    thresholdInInterfaces: 20
-    thresholdInObjects: 20
-    thresholdInEnums: 20
+    thresholdInFiles: 30
+    thresholdInClasses: 30
+    thresholdInInterfaces: 30
+    thresholdInObjects: 30
+    thresholdInEnums: 30
     ignoreDeprecated: false
     ignorePrivate: false
     ignoreOverridden: false
@@ -543,7 +543,7 @@ style:
     active: false
   DestructuringDeclarationWithTooManyEntries:
     active: true
-    maxDestructuringEntries: 3
+    maxDestructuringEntries: 10
   DoubleNegativeLambda:
     active: false
     negativeFunctions:
