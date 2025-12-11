@@ -39,6 +39,8 @@ fun Application.loadConfig(): Context {
     val httpLoggingConfigSensitiveHeaders = httpLoggingConfig.property("sensitiveHeaders").getList().map(transform = String::lowercase)
     val httpLoggingConfigMaxBodySize = httpLoggingConfig.property("maxBodySize").getString().toInt()
 
+    val mobileProxyHost = config.property("ktor.proxy.host").getString()
+
     val mobileProxyDeviceConfigs = config.configList("ktor.proxy.devices").map { mobileProxyDeviceConfig ->
         MobileProxyDeviceConfig(
             deviceId = mobileProxyDeviceConfig.property("deviceId").getString(),
@@ -59,7 +61,10 @@ fun Application.loadConfig(): Context {
             databaseUser = databaseUser,
             databasePassword = databasePassword
         ),
-        mobileProxyConfig = MobileProxyConfig(mobileProxyDeviceConfigs),
+        mobileProxyConfig = MobileProxyConfig(
+            host = mobileProxyHost,
+            mobileProxyDeviceConfigs = mobileProxyDeviceConfigs
+        ),
         httpLoggingConfig = HttpLoggingConfig(
             enabled = httpLoggingConfigEnabled,
             level = httpLoggingConfigLevel,

@@ -192,7 +192,7 @@ class MobileProxyManager(
         val config = proxyConfigs.find { proxyConfig -> proxyConfig.deviceId == deviceId } ?: error("Proxy config for device $deviceId not found")
 
         return ProxyConfig.Default(
-            host = context.environment.mobileProxyHost,
+            host = context.mobileProxyConfig.host,
             port = config.port,
             login = config.login,
             password = config.password

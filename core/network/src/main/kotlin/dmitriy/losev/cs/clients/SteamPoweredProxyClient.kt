@@ -8,7 +8,7 @@ import org.koin.core.annotation.Singleton
 @Singleton
 class SteamPoweredProxyClient(@Provided httpClientHandler: HttpClientHandler): BaseProxyClient(httpClientHandler) {
 
-    override val service = Service.STEAM_POWERED
+    override val service = Service.SteamPowered
 
     override val protocol = URLProtocol.HTTPS
 

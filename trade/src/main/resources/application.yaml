@@ -16,6 +16,7 @@ ktor:
     environment: "prod"
     debug: true
   proxy:
+    host: ${MOBILE_PROXY_HOST}
     devices:
       - deviceId: "e3e65dbd"
         port: 1070

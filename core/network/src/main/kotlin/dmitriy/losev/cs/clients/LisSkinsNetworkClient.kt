@@ -7,7 +7,7 @@ import org.koin.core.annotation.Singleton
 @Singleton
 class LisSkinsNetworkClient(httpClientHandler: HttpClientHandler): NetworkClient(httpClientHandler) {
 
-    override val service = Service.LIS_SKINS
+    override val service = Service.LisSkins
 
     override val protocol = URLProtocol.HTTPS
 }

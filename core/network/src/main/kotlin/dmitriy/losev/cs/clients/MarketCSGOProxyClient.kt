@@ -13,7 +13,7 @@ import org.koin.core.annotation.Singleton
 @Singleton
 class MarketCSGOProxyClient(private val httpClientHandler: HttpClientHandler) : BaseNetworkClient() {
 
-    override val service = Service.MARKET_CSGO
+    override val service = Service.MarketCsgo
 
     override val protocol = URLProtocol.HTTPS
     private val clientCache = mutableMapOf<Long, HttpClient>()

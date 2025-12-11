@@ -13,11 +13,7 @@ class MobileProxyServiceNetworkClient(
     @Provided private val httpClientHandler: HttpClientHandler
 ) : BaseNetworkClient() {
 
-    override val service = if (context.environment.isProd) {
-        Service.PROD_MOBILE_PROXY_SERVICE
-    } else {
-        Service.DEV_MOBILE_PROXY_SERVICE
-    }
+    override val service = Service.MobileProxy(host = context.mobileProxyConfig.host)
 
     suspend fun rotate(deviceId: String): RotateResponse {
         return getRequest(

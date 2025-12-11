@@ -14,7 +14,7 @@ class CsFloatProxyClient(
     @Provided proxyRateLimiter: ProxyRateLimiter
 ) : BaseMobileProxyClient(httpClientHandler, mobileProxyManager, proxyRateLimiter) {
 
-    override val service = Service.CS_FLOAT
+    override val service = Service.CsFloat
 
     override val protocol = URLProtocol.HTTPS
 

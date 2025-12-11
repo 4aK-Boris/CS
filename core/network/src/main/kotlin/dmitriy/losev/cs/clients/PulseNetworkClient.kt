@@ -7,7 +7,7 @@ import org.koin.core.annotation.Singleton
 @Singleton
 class PulseNetworkClient(httpClientHandler: HttpClientHandler): NetworkClient(httpClientHandler) {
 
-    override val service = Service.PULSE
+    override val service = Service.Pulse
 
     override val protocol = URLProtocol.HTTPS
 
