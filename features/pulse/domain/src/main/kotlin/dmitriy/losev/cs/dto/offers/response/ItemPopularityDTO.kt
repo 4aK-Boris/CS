@@ -7,3 +7,4 @@ data class ItemPopularityDTO(
     val salesCount: Int,
     val marketItemUrl: String?
 )
+
