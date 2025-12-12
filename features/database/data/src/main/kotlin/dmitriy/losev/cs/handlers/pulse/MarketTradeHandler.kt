@@ -1,10 +1,8 @@
 package dmitriy.losev.cs.handlers.pulse
 
-interface MarketTradeHandler {
+import dmitriy.losev.cs.dso.pulse.MarketItemDSO
 
-//    suspend fun insertMarkerItems(markerItems: List<MarketItemDSO>)
-//
-//    suspend fun removeMarkerItems()
-//
-//    suspend fun getMarkerItems(buyMarket: String, sellMarket: String): List<MarketItemDSO>
+internal interface MarketTradeHandler {
+
+    suspend fun upsertMarkerItems(markerItems: List<MarketItemDSO>)
 }

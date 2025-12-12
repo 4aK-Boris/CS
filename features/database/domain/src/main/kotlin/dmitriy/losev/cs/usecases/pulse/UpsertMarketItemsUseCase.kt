@@ -1,0 +1,15 @@
+package dmitriy.losev.cs.usecases.pulse
+
+import dmitriy.losev.cs.dto.pulse.MarketItemDTO
+import dmitriy.losev.cs.repositories.pulse.MarketTradeRepository
+import dmitriy.losev.cs.usecases.BaseUseCase
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Provided
+
+@Factory
+class UpsertMarketItemsUseCase(@Provided private val marketTradeRepository: MarketTradeRepository): BaseUseCase {
+
+    suspend operator fun invoke(markerItems: List<MarketItemDTO>): Result<Unit> = runCatching {
+        marketTradeRepository.upsertMarkerItems(markerItems)
+    }
+}

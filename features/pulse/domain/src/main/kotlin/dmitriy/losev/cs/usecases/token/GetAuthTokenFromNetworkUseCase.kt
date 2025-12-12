@@ -11,6 +11,6 @@ import org.koin.core.annotation.Provided
 class GetAuthTokenFromNetworkUseCase(@Provided private val pulseRepository: PulseRepository): BaseUseCase {
 
     suspend operator fun invoke(authRequest: AuthRequestDTO): Result<AuthResponseDTO> = runCatching {
-        pulseRepository.getAuthToken(authRequest)
+        pulseRepository.getAuthTokenFromNetwork(authRequest)
     }
 }

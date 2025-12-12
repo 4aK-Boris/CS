@@ -17,7 +17,8 @@ import org.koin.core.annotation.Module
         DatabaseFeatureModule::class,
         SteamFeatureModule::class,
         ProxyFeatureModule::class,
-        CsFloatFeatureModule::class
+        CsFloatFeatureModule::class,
+        PulseFeatureModule::class
     ]
 )
 class AppModule

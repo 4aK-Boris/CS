@@ -11,7 +11,7 @@ class SalesCountFilterMapper {
         return SalesCountFilterDSO(
             id = value.id,
             market = value.market.title,
-            period = value.period.title,
+            period = value.period,
             salesCount = value.salesCount
         )
     }

@@ -6,6 +6,7 @@ import dmitriy.losev.cs.MobileProxyDeviceConfig
 import dmitriy.losev.cs.Environment
 import dmitriy.losev.cs.HttpLoggingConfig
 import dmitriy.losev.cs.MobileProxyConfig
+import dmitriy.losev.cs.PulseConfig
 import io.ktor.server.application.Application
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,6 +40,9 @@ fun Application.loadConfig(): Context {
     val httpLoggingConfigSensitiveHeaders = httpLoggingConfig.property("sensitiveHeaders").getList().map(transform = String::lowercase)
     val httpLoggingConfigMaxBodySize = httpLoggingConfig.property("maxBodySize").getString().toInt()
 
+    val pulseEmail = config.property("ktor.pulse.email").getString()
+    val pulsePassword = config.property("ktor.pulse.password").getString()
+
     val mobileProxyHost = config.property("ktor.proxy.host").getString()
 
     val mobileProxyDeviceConfigs = config.configList("ktor.proxy.devices").map { mobileProxyDeviceConfig ->
@@ -64,6 +68,11 @@ fun Application.loadConfig(): Context {
         mobileProxyConfig = MobileProxyConfig(
             host = mobileProxyHost,
             mobileProxyDeviceConfigs = mobileProxyDeviceConfigs
+        ),
+        pulseConfig = PulseConfig(
+            templateId = 116255,
+            email = pulseEmail,
+            password = pulsePassword
         ),
         httpLoggingConfig = HttpLoggingConfig(
             enabled = httpLoggingConfigEnabled,

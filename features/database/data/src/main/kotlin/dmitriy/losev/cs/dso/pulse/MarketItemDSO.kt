@@ -1,16 +1,13 @@
 package dmitriy.losev.cs.dso.pulse
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 internal data class MarketItemDSO(
-    val itemName: String,
-    val minBuyPrice: Double,
-    val maxSellPrice: Double,
-    val buyMarket: String,
-    val sellMarket: String,
-    val offersCount: Int,
-    val profit: Double,
-    val lastUpdatedInBuyMarket: LocalDateTime,
-    val lastUpdatedInSellMarket: LocalDateTime,
-    val firstAddition: LocalDateTime,
+    val marketHashName: String,
+    val market: String,
+    val minPrice: Int?,
+    val buyOrderPrice: Int?,
+    val tradeOnPrice: Int?,
+    val weeklySalesCount: Int,
+    val createdAt: Instant
 )

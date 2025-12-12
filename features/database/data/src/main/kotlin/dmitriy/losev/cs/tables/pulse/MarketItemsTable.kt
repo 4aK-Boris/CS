@@ -1,29 +1,68 @@
 package dmitriy.losev.cs.tables.pulse
 
-import org.jetbrains.exposed.v1.core.Table
-import org.jetbrains.exposed.v1.javatime.datetime
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.javatime.CurrentTimestamp
+import org.jetbrains.exposed.v1.javatime.timestamp
 
-object MarketItemsTable: Table(name = "pulse.market_items") {
+object MarketItemsTable : IntIdTable(name = "pulse.market_items") {
+    val marketHashName = varchar(name = "market_hash_name", length = 255)
 
-    val itemName = varchar("item_name", 255)
+    val market = varchar(name = "market", length = 50)
 
-    val minBuyPrice = double("min_buy_price")
+    val minPrice = integer(name = "min_price")
+        .nullable()
+        .default(defaultValue = null)
 
-    val maxSellPrice = double("max_sell_price")
+    val minPriceUpdatedAt = timestamp(name = "min_price_updated_at")
+        .nullable()
+        .default(defaultValue = null)
 
-    val buyMarket = varchar("buy_market", 32)
+    val buyOrderPrice = integer(name = "buy_order_price")
+        .nullable()
+        .default(defaultValue = null)
 
-    val sellMarket = varchar("sell_market", 32)
+    val buyOrderUpdatedAt = timestamp(name = "buy_order_updated_at")
+        .nullable()
+        .default(defaultValue = null)
 
-    val offersCount = integer("offers_count")
+    val tradeOnPrice = integer(name = "trade_on_price")
+        .nullable()
+        .default(defaultValue = null)
+    val tradeOnPriceUpdatedAt = timestamp(name = "trade_on_price_updated_at")
+        .nullable()
+        .default(defaultValue = null)
 
-    val profit = double("profit")
+    val recommendedSellPrice = integer(name = "recommended_sell_price")
+        .nullable()
+        .default(defaultValue = null)
 
-    val lastUpdatedInBuyMarket = datetime(name = "last_updated_in_buy_market")
+    val recommendedSellPriceUpdatedAt = timestamp(name = "recommended_sell_price_updated_at")
+        .nullable()
+        .default(defaultValue = null)
 
-    val lastUpdatedInSellMarket = datetime(name = "last_updated_in_sell_market")
+    val recommendedBuyPrice = integer(name = "recommended_buy_price")
+        .nullable()
+        .default(defaultValue = null)
 
-    val firstAddition = datetime("first_addition")
+    val recommendedBuyPriceUpdatedAt = timestamp(name = "recommended_buy_price_updated_at")
+        .nullable()
+        .default(defaultValue = null)
 
-    override val primaryKey = PrimaryKey(firstColumn = itemName)
+    val recommendedBuyOrdersCount = integer(name = "recommended_buy_orders_count")
+        .nullable()
+        .default(defaultValue = null)
+
+    val weeklySalesCount = integer(name = "weekly_sales_count")
+
+    val salesUpdatedAt = timestamp(name = "sales_updated_at")
+
+    val createdAt = timestamp(name = "created_at").defaultExpression(CurrentTimestamp)
+
+    init {
+
+        uniqueIndex(marketHashName, market)
+
+        index(false, marketHashName)
+        index(false, market)
+    }
 }

@@ -14,8 +14,6 @@ internal class PulseNetworkImpl(@Provided private val pulseNetworkClient: PulseN
     override suspend fun getAuthToken(authRequest: AuthRequestDSO): AuthResponseDSO {
         return pulseNetworkClient.post(
             handle = AUTH_HANDLE,
-            requestClazz = AuthRequestDSO::class,
-            responseClazz = AuthResponseDSO::class,
             body = authRequest
         )
     }
@@ -24,8 +22,6 @@ internal class PulseNetworkImpl(@Provided private val pulseNetworkClient: PulseN
         return pulseNetworkClient.post(
             handle = OFFERS_HANDLE.format(offersRequest.firstMarketOptions.marketName, offersRequest.secondMarketOptions.marketName),
             headers = mapOf("Authorization" to "Bearer ${offersRequest.authToken}"),
-            requestClazz = OffersRequestDSO::class,
-            responseClazz = OffersResponseDSO::class,
             body = offersRequest
         )
     }

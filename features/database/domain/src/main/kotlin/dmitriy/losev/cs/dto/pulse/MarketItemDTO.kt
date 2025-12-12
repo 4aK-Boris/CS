@@ -1,17 +1,16 @@
 package dmitriy.losev.cs.dto.pulse
 
 import dmitriy.losev.cs.pulse.Market
-import java.time.LocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 data class MarketItemDTO(
-    val itemName: String,
-    val minBuyPrice: Double,
-    val maxSellPrice: Double,
-    val buyMarket: Market,
-    val sellMarket: Market,
-    val offersCount: Int,
-    val profit: Double,
-    val lastUpdatedInBuyMarket: LocalDateTime,
-    val lastUpdatedInSellMarket: LocalDateTime,
-    val firstAddition: LocalDateTime,
+    val marketHashName: String,
+    val market: Market,
+    val minPrice: Int? = null,
+    val buyOrderPrice: Int? = null,
+    val tradeOnPrice: Int? = null,
+    val weeklySalesCount: Int,
+    val createdAt: Instant
 )

@@ -12,6 +12,9 @@ ktor:
     aesKey: ${AES_KEY}
   csfloat:
     url: "http://csfloat:80"
+  pulse:
+    email: ${PULSE_EMAIL}
+    password: ${PULSE_PASSWORD}
   app:
     environment: "prod"
     debug: true

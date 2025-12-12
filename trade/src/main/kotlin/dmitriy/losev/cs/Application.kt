@@ -7,6 +7,7 @@ import dmitriy.losev.cs.configs.configureStatusPages
 import dmitriy.losev.cs.configs.loadConfig
 import dmitriy.losev.cs.routes.configureProxyRouting
 import dmitriy.losev.cs.routes.steam.configureSteamRouting
+import dmitriy.losev.cs.tasks.configurePulseTasks
 import dmitriy.losev.cs.tasks.configureSteamTasks
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -58,6 +59,7 @@ fun Application.module() {
     configureLogging()
 
     configureSteamTasks()
+    configurePulseTasks()
 
     routing {
         configureSteamRouting()

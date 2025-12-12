@@ -1,6 +1,8 @@
 package dmitriy.losev.cs.usecases.offers
 
 import dmitriy.losev.cs.Context
+import dmitriy.losev.cs.core.PriceType
+import dmitriy.losev.cs.dto.offers.MarketConfig
 import dmitriy.losev.cs.dto.offers.request.MarketOptionsDTO
 import dmitriy.losev.cs.dto.offers.request.MarketPriceFilterDTO
 import dmitriy.losev.cs.dto.offers.request.OffersRequestDTO
@@ -8,7 +10,6 @@ import dmitriy.losev.cs.dto.offers.request.ProfitPercentFilterDTO
 import dmitriy.losev.cs.dto.offers.request.SalesCountFilterDTO
 import dmitriy.losev.cs.dto.offers.response.OffersResponseDTO
 import dmitriy.losev.cs.pulse.Market
-import dmitriy.losev.cs.pulse.Period
 import dmitriy.losev.cs.usecases.BaseUseCase
 import dmitriy.losev.cs.usecases.mapCatchingInData
 import dmitriy.losev.cs.usecases.token.GetAuthTokenUseCase
@@ -22,20 +23,25 @@ class GetOffersWithAuthTokenUseCase(
     private val getAuthTokenUseCase: GetAuthTokenUseCase
 ) : BaseUseCase {
 
-    suspend operator fun invoke(minProfit: Int, buyMarket: Market, sellMarket: Market): Result<OffersResponseDTO> {
+    suspend operator fun invoke(marketConfig: MarketConfig): Result<OffersResponseDTO> {
         return getAuthTokenUseCase.invoke().mapCatchingInData { authToken ->
-            getOffersUseCase.invoke(offersRequest = getOffersRequest(authToken, minProfit, buyMarket, sellMarket))
+            getOffersUseCase.invoke(offersRequest = getOffersRequest(authToken, marketConfig))
         }
     }
 
-    private fun getOffersRequest(authToken: String, minProfit: Int, firstMarket: Market, secondMarket: Market): OffersRequestDTO {
+    private fun getOffersRequest(authToken: String, marketConfig: MarketConfig): OffersRequestDTO {
         return OffersRequestDTO(
             authToken = authToken,
             templateId = context.pulseConfig.templateId,
-            firstMarketOptions = getBuyMarketOptions(market = firstMarket),
-            secondMarketOptions = getSellMarketOptions(market = secondMarket),
-            profitPercentFilter = getProfitPercentFilter(minProfit = minProfit),
-            salesCountFilters = getSalesCountFilters(market = secondMarket)
+            firstMarketOptions = getBuyMarketOptions(
+                market = marketConfig.buyMarket,
+                priceType = marketConfig.buyMarketPriceType,
+                minPrice = marketConfig.minPrice,
+                maxPrice = marketConfig.maxPrice
+            ),
+            secondMarketOptions = getSellMarketOptions(market = marketConfig.sellMarket, priceType = marketConfig.sellMarketPriceType),
+            profitPercentFilter = getProfitPercentFilter(minProfit = marketConfig.minProfit),
+            salesCountFilters = getSalesCountFilters(market = marketConfig.sellMarket)
         )
     }
 
@@ -49,25 +55,30 @@ class GetOffersWithAuthTokenUseCase(
                 SalesCountFilterDTO(
                     id = market.filterSalesId,
                     market = market,
-                    period = Period.WEEK,
+                    period = "Week",
                     salesCount = market.minSales
                 )
             )
         }
     }
 
-    private fun getBuyMarketOptions(market: Market): MarketOptionsDTO {
+    private fun getBuyMarketOptions(
+        market: Market,
+        priceType: PriceType,
+        minPrice: Double,
+        maxPrice: Double
+    ): MarketOptionsDTO {
         return MarketOptionsDTO(
             market = market,
-            marketPriceFilter = MarketPriceFilterDTO(minValue = 0.5),
-            marketPriceType = market.firstPriceType
+            marketPriceFilter = MarketPriceFilterDTO(minValue = minPrice, maxValue = maxPrice),
+            marketPriceType = priceType
         )
     }
 
-    private fun getSellMarketOptions(market: Market): MarketOptionsDTO {
+    private fun getSellMarketOptions(market: Market, priceType: PriceType): MarketOptionsDTO {
         return MarketOptionsDTO(
             market = market,
-            marketPriceType = market.secondPriceType
+            marketPriceType = priceType
         )
     }
 }
